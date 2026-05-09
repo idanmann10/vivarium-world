@@ -6,7 +6,9 @@ import { describe, expect, test } from "bun:test";
 
 import { archiveRegressionCandidates } from "./archive-regression.js";
 import { computeStatsMarkdown } from "./compute-stats.js";
+import { canAutoMerge, computeContributorTrust, requiredValidatorCount } from "./compute-trust.js";
 import { flagStaleSkills } from "./flag-stale.js";
+import { listHeldReviews } from "./list-held-reviews.js";
 
 function skill(root: string, slug: string, metadata: string): string {
   const directory = join(root, "domains", "coding", "skills", slug);
@@ -37,6 +39,52 @@ describe("world operations", () => {
 
     expect(flagStaleSkills(root, new Date("2026-05-09T00:00:00.000Z"))).toEqual([
       "domains/coding/skills/old/SKILL.md",
+    ]);
+  });
+
+  test("computes trust and required validator counts", () => {
+    const lowTrust = computeContributorTrust([{ lowerBound: 0.1, uses: 1 }]);
+    const highTrust = computeContributorTrust([{ lowerBound: 0.9, uses: 100 }]);
+
+    expect(lowTrust).toBeLessThan(highTrust);
+    expect(requiredValidatorCount(highTrust)).toBe(3);
+    expect(requiredValidatorCount(lowTrust)).toBe(5);
+  });
+
+  test("checks auto-merge gates", () => {
+    expect(
+      canAutoMerge({
+        effectiveLowerBound: 0.6,
+        positiveValidators: 3,
+        requiredValidators: 3,
+        regressionVotes: 0,
+      }),
+    ).toBe(true);
+    expect(
+      canAutoMerge({
+        effectiveLowerBound: 0.6,
+        positiveValidators: 3,
+        requiredValidators: 3,
+        regressionVotes: 1,
+      }),
+    ).toBe(false);
+  });
+
+  test("lists held reviews for first-ten manual review", () => {
+    const root = mkdtempSync(join(tmpdir(), "world-held-"));
+    const directory = join(root, "proposals", "skills", "coding", "new-skill");
+    mkdirSync(directory, { recursive: true });
+    writeFileSync(
+      join(directory, "SKILL.md"),
+      "---\ncontributor: new-agent\ncontributor_contributions: 2\n---\n\n# New Skill\n\nBody.\n",
+    );
+
+    expect(listHeldReviews(root)).toEqual([
+      {
+        path: "proposals/skills/coding/new-skill/SKILL.md",
+        contributor: "new-agent",
+        reason: "first-ten-contributions",
+      },
     ]);
   });
 });
