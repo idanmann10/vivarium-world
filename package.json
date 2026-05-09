@@ -1,0 +1,16 @@
+{
+  "name": "the-world",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bun run scripts/build.ts",
+    "lint": "bun run scripts/validate-world.ts",
+    "seed": "bun run scripts/seed-content.ts",
+    "test": "bun test scripts",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.3",
+    "typescript": "^5.9.3"
+  }
+}

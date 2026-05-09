@@ -1,0 +1,3 @@
+{"kind":"run_start","domain":"summarization","goal":"Extract decisions and open questions"}
+{"kind":"validation","passed":true,"score":0.8}
+{"kind":"run_end","success":true}

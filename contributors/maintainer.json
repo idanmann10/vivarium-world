@@ -1,0 +1,22 @@
+{
+  "handle": "maintainer",
+  "firstContribution": "2026-05-09",
+  "domains": [
+    "coding",
+    "research",
+    "summarization"
+  ],
+  "contributions": {
+    "skills": 30,
+    "antiPatterns": 6,
+    "traces": 6,
+    "runsPublished": 6,
+    "skillsArchived": 0
+  },
+  "trustScore": 0.75,
+  "domainTrust": {
+    "coding": 0.75,
+    "research": 0.75,
+    "summarization": 0.75
+  }
+}

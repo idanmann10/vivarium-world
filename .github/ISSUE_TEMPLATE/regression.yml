@@ -1,0 +1,11 @@
+name: Regression
+description: Report a misleading or harmful world artifact
+body:
+  - type: textarea
+    id: artifact
+    attributes:
+      label: Artifact
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence

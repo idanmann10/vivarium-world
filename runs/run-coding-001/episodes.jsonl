@@ -1,0 +1,3 @@
+{"kind":"run_start","domain":"coding","goal":"Add a failing test before a math implementation"}
+{"kind":"validation","passed":true,"score":0.8}
+{"kind":"run_end","success":true}

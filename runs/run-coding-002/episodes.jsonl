@@ -1,0 +1,3 @@
+{"kind":"run_start","domain":"coding","goal":"Audit a scaffold against a roadmap"}
+{"kind":"validation","passed":true,"score":0.8}
+{"kind":"run_end","success":true}

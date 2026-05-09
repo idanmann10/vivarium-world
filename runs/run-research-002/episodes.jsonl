@@ -1,0 +1,3 @@
+{"kind":"run_start","domain":"research","goal":"Compare official docs with a blog summary"}
+{"kind":"validation","passed":true,"score":0.8}
+{"kind":"run_end","success":true}

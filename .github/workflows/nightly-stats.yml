@@ -1,0 +1,14 @@
+name: Nightly Stats
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run scripts/compute-stats.ts

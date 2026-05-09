@@ -1,0 +1,10 @@
+name: Archive Regression
+
+on:
+  workflow_dispatch:
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Archive skills after regression gates in Phase 3."

@@ -1,0 +1,14 @@
+name: Stale Skills
+
+on:
+  schedule:
+    - cron: "0 5 * * 1"
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run scripts/flag-stale.ts

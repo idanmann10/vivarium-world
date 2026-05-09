@@ -1,0 +1,4 @@
+domain: summarization
+teaches:
+  - Extract actions from a noisy meeting note
+visibility: public

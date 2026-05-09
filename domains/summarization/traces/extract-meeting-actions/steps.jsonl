@@ -1,0 +1,3 @@
+{"index":1,"action":"frame","annotation":"Name success before acting."}
+{"index":2,"action":"gather evidence","annotation":"Prefer concrete artifacts."}
+{"index":3,"action":"validate","annotation":"Compare against the goal."}

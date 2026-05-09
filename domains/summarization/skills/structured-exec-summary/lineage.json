@@ -1,0 +1,7 @@
+{
+  "id": "summarization.structured-exec-summary",
+  "inspired_by": [
+    "https://github.com/garrytan/gstack"
+  ],
+  "competes_with": []
+}

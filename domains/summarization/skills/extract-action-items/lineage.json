@@ -1,0 +1,7 @@
+{
+  "id": "summarization.extract-action-items",
+  "inspired_by": [
+    "https://github.com/garrytan/gstack"
+  ],
+  "competes_with": []
+}

@@ -1,0 +1,11 @@
+name: Proposal
+description: Propose a new world artifact or format change
+body:
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation

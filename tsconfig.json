@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noEmit": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2023",
+    "types": [
+      "bun"
+    ],
+    "verbatimModuleSyntax": true
+  },
+  "include": [
+    "scripts/**/*.ts"
+  ]
+}
