@@ -1,0 +1,15 @@
+name: Validate Proposals
+
+on:
+  pull_request:
+    paths:
+      - "proposals/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run scripts/validate-proposals.ts

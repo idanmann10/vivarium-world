@@ -490,6 +490,7 @@ describe("world operations", () => {
     const revalidateWorkflow = readFileSync(".github/workflows/revalidate.yml", "utf8");
     const staleSkillsWorkflow = readFileSync(".github/workflows/stale-skills.yml", "utf8");
     const domainArtifactsWorkflow = readFileSync(".github/workflows/validate-domain-artifacts.yml", "utf8");
+    const proposalsWorkflow = readFileSync(".github/workflows/validate-proposals.yml", "utf8");
 
     expect(ciWorkflow).toContain("pull_request:");
     expect(ciWorkflow).toContain("push:");
@@ -534,6 +535,7 @@ describe("world operations", () => {
     expect(revalidateWorkflow).toContain("bun run scripts/validate-skill.ts");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-anti-pattern.ts");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-domain-artifacts.ts");
+    expect(revalidateWorkflow).toContain("bun run scripts/validate-proposals.ts");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-trace.ts");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-run.ts");
     expect(revalidateWorkflow).toContain("bun run scripts/rebuild-contributors.ts");
@@ -557,5 +559,9 @@ describe("world operations", () => {
     expect(domainArtifactsWorkflow).toContain("domains/**/rubrics/**");
     expect(domainArtifactsWorkflow).toContain("domains/**/exemplars/**");
     expect(domainArtifactsWorkflow).toContain("bun run scripts/validate-domain-artifacts.ts");
+
+    expect(proposalsWorkflow).toContain("pull_request:");
+    expect(proposalsWorkflow).toContain("proposals/**");
+    expect(proposalsWorkflow).toContain("bun run scripts/validate-proposals.ts");
   });
 });

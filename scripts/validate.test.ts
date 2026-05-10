@@ -5,6 +5,7 @@ import { join } from "node:path";
 
 import { validateAntiPatternFiles } from "./validate-anti-pattern.js";
 import { validateDomainArtifactFiles } from "./validate-domain-artifacts.js";
+import { validateProposalFiles } from "./validate-proposals.js";
 import { validateRunFiles } from "./validate-run.js";
 import { validateTraceFiles } from "./validate-trace.js";
 import { assertCodingStarterPack, assertMinimums, countDomainStarterPack, countWorld } from "./world-utils.js";
@@ -74,6 +75,39 @@ describe("world seed content", () => {
       "domains/coding/exemplars/baseline/output.md: missing meta.yaml",
       "domains/coding/exemplars/leaky/output.md: possible PII",
       "domains/coding/rubrics/bad.md: invalid structure",
+    ]);
+  });
+
+  test("proposal validator rejects malformed or leaky contribution proposals", () => {
+    const root = mkdtempSync(join(tmpdir(), "world-proposal-validation-"));
+    const skillRoot = join(root, "proposals", "skills", "coding", "bad-skill");
+    const traceRoot = join(root, "proposals", "traces", "coding", "trace-leaky");
+    const runRoot = join(root, "proposals", "runs", "run-bad");
+    const antiPatternRoot = join(root, "proposals", "anti-patterns", "coding", "anti-leaky");
+    mkdirSync(skillRoot, { recursive: true });
+    mkdirSync(traceRoot, { recursive: true });
+    mkdirSync(runRoot, { recursive: true });
+    mkdirSync(antiPatternRoot, { recursive: true });
+    writeFileSync(join(skillRoot, "SKILL.md"), "# Bad Skill\n\nNo metadata.\n", "utf8");
+    writeFileSync(
+      join(traceRoot, "TRACE.md"),
+      "---\nid: coding.trace-leaky\ntitle: Trace Leaky\ndomain: coding\nvisibility: public\ncontributor: agent-a\n---\n\n# Goal\n\nReplay ida@example.com.\n\n## Step 1\n\nUse Bearer sk-secret.\n",
+      "utf8",
+    );
+    writeFileSync(join(traceRoot, "steps.jsonl"), "{}\n", "utf8");
+    writeFileSync(join(traceRoot, "meta.yaml"), "domain: coding\nvisibility: public\ncontributor: agent-a\n", "utf8");
+    writeFileSync(join(runRoot, "RUN.md"), "# Goal\n\nNo outcome.\n", "utf8");
+    writeFileSync(
+      join(antiPatternRoot, "ANTI-PATTERN.md"),
+      "---\nid: coding.anti-leaky\nname: Anti Leaky\ndomain: coding\nvisibility: public\ncontributor: agent-a\n---\n\n# Anti Leaky\n\n## What Not To Do\n\nEmail ida@example.com.\n\n## Why\n\nLeaks Bearer sk-secret.\n\n## Instead Do\n\nRedact.\n",
+      "utf8",
+    );
+
+    expect(validateProposalFiles(root)).toEqual([
+      "proposals/anti-patterns/coding/anti-leaky/ANTI-PATTERN.md: possible PII",
+      "proposals/runs/run-bad/RUN.md: invalid structure",
+      "proposals/skills/coding/bad-skill/SKILL.md: invalid structure",
+      "proposals/traces/coding/trace-leaky/TRACE.md: possible PII",
     ]);
   });
 });
