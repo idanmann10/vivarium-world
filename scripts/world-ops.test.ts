@@ -134,6 +134,7 @@ describe("world operations", () => {
         "bun run build",
       ],
       ".github/PULL_REQUEST_TEMPLATE/new-anti-pattern.md": [
+        "bun run scripts/validate-anti-pattern.ts",
         "bun run lint",
         "bun run typecheck",
         "bun run test",
@@ -530,6 +531,7 @@ describe("world operations", () => {
     expect(revalidateWorkflow).toContain("bun run typecheck");
     expect(revalidateWorkflow).toContain("bun run build");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-skill.ts");
+    expect(revalidateWorkflow).toContain("bun run scripts/validate-anti-pattern.ts");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-trace.ts");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-run.ts");
     expect(revalidateWorkflow).toContain("bun run scripts/rebuild-contributors.ts");
@@ -542,5 +544,10 @@ describe("world operations", () => {
     expectCheckpointAfter(staleSkillsWorkflow, "bun run scripts/flag-stale.ts");
     expect(staleSkillsWorkflow).toContain("git add domains");
     expect(staleSkillsWorkflow).toContain("gh pr create");
+
+    const antiPatternWorkflow = readFileSync(".github/workflows/validate-anti-pattern.yml", "utf8");
+    expect(antiPatternWorkflow).toContain("pull_request:");
+    expect(antiPatternWorkflow).toContain("domains/**/anti-patterns/**");
+    expect(antiPatternWorkflow).toContain("bun run scripts/validate-anti-pattern.ts");
   });
 });

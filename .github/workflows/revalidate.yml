@@ -14,6 +14,7 @@ jobs:
       - run: bun run typecheck
       - run: bun run build
       - run: bun run scripts/validate-skill.ts
+      - run: bun run scripts/validate-anti-pattern.ts
       - run: bun run scripts/validate-trace.ts
       - run: bun run scripts/validate-run.ts
       - run: bun run scripts/rebuild-contributors.ts
