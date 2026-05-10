@@ -485,6 +485,7 @@ describe("world operations", () => {
 
     expect(revalidateWorkflow).not.toContain("placeholder");
     expect(revalidateWorkflow).toContain("bun run typecheck");
+    expect(revalidateWorkflow).toContain("bun run build");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-skill.ts");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-trace.ts");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-run.ts");

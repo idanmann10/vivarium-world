@@ -12,6 +12,7 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run lint
       - run: bun run typecheck
+      - run: bun run build
       - run: bun run scripts/validate-skill.ts
       - run: bun run scripts/validate-trace.ts
       - run: bun run scripts/validate-run.ts
