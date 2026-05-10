@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -111,5 +111,20 @@ describe("world operations", () => {
         reason: "first-ten-contributions",
       },
     ]);
+  });
+
+  test("maintenance workflows run concrete world scripts", () => {
+    const archiveWorkflow = readFileSync(".github/workflows/archive-regression.yml", "utf8");
+    const autoMergeWorkflow = readFileSync(".github/workflows/auto-merge.yml", "utf8");
+
+    expect(archiveWorkflow).not.toContain("placeholder");
+    expect(archiveWorkflow).not.toContain("echo \"Archive skills after regression gates in Phase 3.\"");
+    expect(archiveWorkflow).toContain("bun run scripts/archive-regression.ts");
+
+    expect(autoMergeWorkflow).not.toContain("placeholder");
+    expect(autoMergeWorkflow).not.toContain("echo \"Trust-weighted K-agent auto-merge starts in Phase 3.\"");
+    expect(autoMergeWorkflow).toContain("bun run scripts/compute-signals.ts");
+    expect(autoMergeWorkflow).toContain("bun run scripts/list-held-reviews.ts");
+    expect(autoMergeWorkflow).toContain("gh pr merge");
   });
 });

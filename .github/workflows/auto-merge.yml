@@ -1,10 +1,30 @@
 name: Auto Merge
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
 jobs:
-  placeholder:
+  auto-merge:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Trust-weighted K-agent auto-merge starts in Phase 3."
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
+      - run: bun test scripts
+      - run: bun run scripts/compute-signals.ts
+      - run: bun run scripts/compute-trust.ts
+      - run: bun run scripts/list-held-reviews.ts
+      - name: Enable pull request auto-merge
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr merge "$PR_NUMBER" --squash --auto
