@@ -17,6 +17,22 @@ export interface AutoMergeInput {
   readonly validatorVotes?: readonly ValidatorVote[];
 }
 
+export interface AutoMergeGateInput {
+  readonly contributorTrust: number;
+  readonly effectiveLowerBound: number;
+  readonly regressionVotes: number;
+  readonly positiveValidators?: number;
+  readonly validatorVotes?: readonly ValidatorVote[];
+  readonly heldReviews?: readonly { readonly path: string; readonly reason: string }[];
+}
+
+export interface AutoMergeGateResult {
+  readonly allowed: boolean;
+  readonly requiredValidators: number;
+  readonly positiveValidators: number;
+  readonly reasons: readonly string[];
+}
+
 export function computeContributorTrust(evidence: readonly TrustEvidence[]): number {
   const weighted = evidence.reduce((sum, item) => sum + item.lowerBound * Math.log1p(item.uses), 0);
   return 1 / (1 + Math.E ** -weighted);
@@ -47,6 +63,34 @@ export function canAutoMerge(input: AutoMergeInput): boolean {
     positiveValidators >= input.requiredValidators &&
     input.regressionVotes === 0
   );
+}
+
+export function evaluateAutoMergeGate(input: AutoMergeGateInput): AutoMergeGateResult {
+  const requiredValidators = requiredValidatorCount(input.contributorTrust);
+  const positiveValidators =
+    input.validatorVotes === undefined ? input.positiveValidators ?? 0 : countIndependentPositiveValidators(input.validatorVotes);
+  const reasons = [
+    ...(input.heldReviews ?? []).map((review) => `manual review required for ${review.path}: ${review.reason}`),
+    ...(input.effectiveLowerBound >= 0.55 ? [] : [`effective lower bound ${input.effectiveLowerBound} is below 0.55`]),
+    ...(positiveValidators >= requiredValidators
+      ? []
+      : [`requires ${requiredValidators} independent positive validators, found ${positiveValidators}`]),
+    ...(input.regressionVotes === 0 ? [] : [`regression votes must be 0, found ${input.regressionVotes}`]),
+  ];
+
+  return {
+    allowed:
+      reasons.length === 0 &&
+      canAutoMerge({
+        effectiveLowerBound: input.effectiveLowerBound,
+        positiveValidators,
+        requiredValidators,
+        regressionVotes: input.regressionVotes,
+      }),
+    requiredValidators,
+    positiveValidators,
+    reasons,
+  };
 }
 
 if (import.meta.main) {

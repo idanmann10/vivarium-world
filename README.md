@@ -17,3 +17,12 @@ This repository holds skills, anti-patterns, traces, runs, exemplars, rubrics, c
 - `bun run typecheck`
 - `bun run test`
 - `bun run build`
+
+## Auto-Merge Gate
+
+The auto-merge workflow fails closed until live signal collection provides trust and validation evidence:
+
+- `WORLD_CONTRIBUTOR_TRUST`
+- `WORLD_EFFECTIVE_LB`
+- `WORLD_REGRESSION_VOTES`
+- `WORLD_POSITIVE_VALIDATORS` or `WORLD_VALIDATOR_VOTES_JSON`

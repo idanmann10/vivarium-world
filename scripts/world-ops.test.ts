@@ -95,9 +95,67 @@ describe("world operations", () => {
     ).toBe(false);
   });
 
+  test("evaluates auto-merge gates with trust thresholds and manual holds", async () => {
+    const trustModule = await import("./compute-trust.js");
+    expect("evaluateAutoMergeGate" in trustModule).toBe(true);
+    const evaluateAutoMergeGate = (
+      trustModule as typeof trustModule & {
+        readonly evaluateAutoMergeGate: (input: {
+          readonly contributorTrust: number;
+          readonly effectiveLowerBound: number;
+          readonly regressionVotes: number;
+          readonly validatorVotes: readonly {
+            readonly validator: string;
+            readonly machineFingerprint: string;
+            readonly positive: boolean;
+          }[];
+          readonly heldReviews?: readonly { readonly path: string; readonly contributor: string; readonly reason: string }[];
+        }) => {
+          readonly allowed: boolean;
+          readonly requiredValidators: number;
+          readonly positiveValidators: number;
+          readonly reasons: readonly string[];
+        };
+      }
+    ).evaluateAutoMergeGate;
+
+    expect(
+      evaluateAutoMergeGate({
+        contributorTrust: 0.82,
+        effectiveLowerBound: 0.6,
+        regressionVotes: 0,
+        validatorVotes: [
+          { validator: "agent-a", machineFingerprint: "machine-1", positive: true },
+          { validator: "agent-b", machineFingerprint: "machine-2", positive: true },
+          { validator: "agent-c", machineFingerprint: "machine-3", positive: true },
+        ],
+      }),
+    ).toEqual({ allowed: true, requiredValidators: 3, positiveValidators: 3, reasons: [] });
+
+    expect(
+      evaluateAutoMergeGate({
+        contributorTrust: 0.82,
+        effectiveLowerBound: 0.6,
+        regressionVotes: 0,
+        validatorVotes: [
+          { validator: "agent-a", machineFingerprint: "machine-1", positive: true },
+          { validator: "agent-b", machineFingerprint: "machine-2", positive: true },
+        ],
+        heldReviews: [{ path: "proposals/skills/coding/new/SKILL.md", contributor: "new-agent", reason: "first-ten-contributions" }],
+      }).reasons,
+    ).toEqual([
+      "manual review required for proposals/skills/coding/new/SKILL.md: first-ten-contributions",
+      "requires 3 independent positive validators, found 2",
+    ]);
+  });
+
   test("lists held reviews for first-ten manual review", () => {
     const root = mkdtempSync(join(tmpdir(), "world-held-"));
+    const proposalsRoot = join(root, "proposals");
     const directory = join(root, "proposals", "skills", "coding", "new-skill");
+    mkdirSync(proposalsRoot, { recursive: true });
+    writeFileSync(join(proposalsRoot, "README.md"), "# Proposals\n\nDesign proposal index.\n");
+    writeFileSync(join(proposalsRoot, "0001-phase-0-bootstrap-rfc.md"), "# Phase 0 RFC\n\nDiscussion mirror.\n");
     mkdirSync(directory, { recursive: true });
     writeFileSync(
       join(directory, "SKILL.md"),
@@ -124,6 +182,7 @@ describe("world operations", () => {
     expect(autoMergeWorkflow).not.toContain("placeholder");
     expect(autoMergeWorkflow).not.toContain("echo \"Trust-weighted K-agent auto-merge starts in Phase 3.\"");
     expect(autoMergeWorkflow).toContain("bun run scripts/compute-signals.ts");
+    expect(autoMergeWorkflow).toContain("bun run scripts/enforce-auto-merge.ts");
     expect(autoMergeWorkflow).toContain("bun run scripts/list-held-reviews.ts");
     expect(autoMergeWorkflow).toContain("gh pr merge");
   });
