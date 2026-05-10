@@ -26,6 +26,15 @@ function skill(root: string, slug: string, metadata: string): string {
   return path;
 }
 
+function expectCheckpointAfter(workflow: string, anchorCommand: string): void {
+  const anchorIndex = workflow.indexOf(anchorCommand);
+  expect(anchorIndex).toBeGreaterThanOrEqual(0);
+
+  for (const command of ["bun run lint", "bun run typecheck", "bun run build", "bun test scripts"]) {
+    expect(workflow.indexOf(command, anchorIndex)).toBeGreaterThan(anchorIndex);
+  }
+}
+
 describe("world operations", () => {
   test("computes stats markdown", () => {
     const root = mkdtempSync(join(tmpdir(), "world-stats-"));
@@ -463,6 +472,7 @@ describe("world operations", () => {
     expect(archiveWorkflow).not.toContain("placeholder");
     expect(archiveWorkflow).not.toContain("echo \"Archive skills after regression gates in Phase 3.\"");
     expect(archiveWorkflow).toContain("bun run scripts/archive-regression.ts");
+    expectCheckpointAfter(archiveWorkflow, "bun run scripts/archive-regression.ts");
 
     expect(autoMergeWorkflow).not.toContain("placeholder");
     expect(autoMergeWorkflow).not.toContain("echo \"Trust-weighted K-agent auto-merge starts in Phase 3.\"");
@@ -478,12 +488,14 @@ describe("world operations", () => {
 
     expect(featuredArchiveWorkflow).not.toContain("placeholder");
     expect(featuredArchiveWorkflow).toContain("bun run scripts/archive-featured.ts");
+    expectCheckpointAfter(featuredArchiveWorkflow, "bun run scripts/archive-featured.ts");
     expect(featuredArchiveWorkflow).toContain("git add featured/archive");
     expect(featuredArchiveWorkflow).toContain("gh pr create");
 
     expect(nightlyStatsWorkflow).not.toContain("placeholder");
     expect(nightlyStatsWorkflow).toContain("bun run scripts/rebuild-contributors.ts");
     expect(nightlyStatsWorkflow).toContain("bun run scripts/compute-stats.ts");
+    expectCheckpointAfter(nightlyStatsWorkflow, "bun run scripts/compute-stats.ts");
     expect(nightlyStatsWorkflow).toContain("git add contributors STATS.md");
     expect(nightlyStatsWorkflow).toContain("gh pr create");
 
@@ -500,6 +512,7 @@ describe("world operations", () => {
 
     expect(staleSkillsWorkflow).not.toContain("placeholder");
     expect(staleSkillsWorkflow).toContain("bun run scripts/flag-stale.ts");
+    expectCheckpointAfter(staleSkillsWorkflow, "bun run scripts/flag-stale.ts");
     expect(staleSkillsWorkflow).toContain("git add domains");
     expect(staleSkillsWorkflow).toContain("gh pr create");
   });
