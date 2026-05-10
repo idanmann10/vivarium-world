@@ -23,6 +23,10 @@ jobs:
       - run: bun run scripts/compute-trust.ts
       - run: bun run scripts/list-held-reviews.ts
       - run: bun run scripts/check-telemetry.ts
+      - run: bun run scripts/check-veto-window.ts
+        env:
+          WORLD_PR_CREATED_AT: ${{ github.event.pull_request.created_at }}
+          WORLD_PR_LABELS_JSON: ${{ toJson(github.event.pull_request.labels) }}
       - run: bun run scripts/enforce-auto-merge.ts
       - name: Enable pull request auto-merge
         if: github.event_name == 'pull_request'

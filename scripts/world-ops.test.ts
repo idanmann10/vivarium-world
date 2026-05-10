@@ -351,6 +351,47 @@ describe("world operations", () => {
     ]);
   });
 
+  test("evaluates maintainer veto window before auto-merge", async () => {
+    const scriptPath = join(import.meta.dir, "check-veto-window.ts");
+    expect(existsSync(scriptPath)).toBe(true);
+
+    const vetoModule = await import("./check-veto-window.js");
+    const evaluateMaintainerVetoWindow = (
+      vetoModule as typeof vetoModule & {
+        readonly evaluateMaintainerVetoWindow: (input: {
+          readonly createdAt?: string;
+          readonly now: Date;
+          readonly labels?: readonly string[];
+          readonly windowHours?: number;
+        }) => {
+          readonly allowed: boolean;
+          readonly reason?: "maintainer-veto-window-open" | "maintainer-veto-label";
+          readonly ageHours?: number;
+          readonly windowHours: number;
+        };
+      }
+    ).evaluateMaintainerVetoWindow;
+    const now = new Date("2026-05-10T12:00:00.000Z");
+
+    expect(evaluateMaintainerVetoWindow({ createdAt: "2026-05-09T12:00:00.000Z", now })).toEqual({
+      allowed: false,
+      reason: "maintainer-veto-window-open",
+      ageHours: 24,
+      windowHours: 48,
+    });
+    expect(evaluateMaintainerVetoWindow({ createdAt: "2026-05-08T11:00:00.000Z", now })).toEqual({
+      allowed: true,
+      ageHours: 49,
+      windowHours: 48,
+    });
+    expect(evaluateMaintainerVetoWindow({ createdAt: "2026-05-08T11:00:00.000Z", now, labels: ["maintainer-veto"] })).toEqual({
+      allowed: false,
+      reason: "maintainer-veto-label",
+      ageHours: 49,
+      windowHours: 48,
+    });
+  });
+
   test("maintenance workflows run concrete world scripts", () => {
     const archiveWorkflow = readFileSync(".github/workflows/archive-regression.yml", "utf8");
     const autoMergeWorkflow = readFileSync(".github/workflows/auto-merge.yml", "utf8");
@@ -368,6 +409,7 @@ describe("world operations", () => {
     expect(autoMergeWorkflow).toContain("bun run scripts/enforce-auto-merge.ts");
     expect(autoMergeWorkflow).toContain("bun run scripts/list-held-reviews.ts");
     expect(autoMergeWorkflow).toContain("bun run scripts/check-telemetry.ts");
+    expect(autoMergeWorkflow).toContain("bun run scripts/check-veto-window.ts");
     expect(autoMergeWorkflow).toContain("gh pr merge");
 
     expect(featuredArchiveWorkflow).not.toContain("placeholder");
