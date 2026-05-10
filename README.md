@@ -4,11 +4,31 @@ Git-hosted cultural commons for the local-first agent.
 
 This repository holds skills, anti-patterns, traces, runs, exemplars, rubrics, curricula, contributor profiles, featured picks, and validation tooling.
 
-## Domains
+## Navigation
 
-- `coding`
-- `research`
-- `summarization`
+- [domains/](domains/) - skills, traces, rubrics, exemplars, curricula, and anti-patterns by domain.
+- [featured/current.md](featured/current.md) - maintainer-curated current featured picks.
+- [STATS.md](STATS.md) - current world counts, featured picks, and contributor concentration.
+- [contributors/](contributors/) - rebuilt contributor profiles and trust snapshots.
+- [proposals/](proposals/) - local mirrors of proposal and RFC artifacts.
+- [retired/](retired/) - archived artifacts with lineage preserved.
+- [.github/workflows/](.github/workflows/) - validation, maintenance, revalidation, and auto-merge workflows.
+
+## Current Featured Picks
+
+- coding.inspect-before-edit
+- research.primary-source-first
+- summarization.preserve-decisions
+
+## Current Stats
+
+- Domains: 3
+- Skills: 40
+- Anti-patterns: 6
+- Traces: 7
+- Runs: 6
+- Contributor profiles: 1
+- Top 5 skill share: 100.0%
 
 ## Commands
 

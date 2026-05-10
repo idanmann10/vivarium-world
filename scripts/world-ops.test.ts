@@ -68,6 +68,26 @@ describe("world operations", () => {
     expect(readFileSync("STATS.md", "utf8")).toBe(`${computeStatsMarkdown(".")}\n`);
   });
 
+  test("README surfaces navigation, featured picks, and current stats", () => {
+    const readme = readFileSync("README.md", "utf8");
+
+    for (const link of [
+      "[domains/](domains/)",
+      "[featured/current.md](featured/current.md)",
+      "[STATS.md](STATS.md)",
+      "[contributors/](contributors/)",
+      "[proposals/](proposals/)",
+      "[retired/](retired/)",
+      "[.github/workflows/](.github/workflows/)",
+    ]) {
+      expect(readme).toContain(link);
+    }
+
+    expect(readme).toContain("- coding.inspect-before-edit");
+    expect(readme).toContain("- Skills: 40");
+    expect(readme).toContain("- Top 5 skill share: 100.0%");
+  });
+
   test("rebuilds contributor profiles from world artifacts", () => {
     const root = mkdtempSync(join(tmpdir(), "world-contributors-"));
     skill(root, "one", "contributor: agent-a");
