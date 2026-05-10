@@ -1,0 +1,9 @@
+{
+  "id": "coding.cli-output-contracts",
+  "inspired_by": [
+    "goal.md",
+    "https://github.com/obra/superpowers",
+    "https://github.com/garrytan/gstack"
+  ],
+  "competes_with": []
+}

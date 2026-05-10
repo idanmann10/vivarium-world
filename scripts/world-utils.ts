@@ -12,6 +12,11 @@ export interface CountSummary {
   readonly contributors: number;
 }
 
+export interface DomainStarterPackSummary {
+  readonly skills: number;
+  readonly traces: number;
+}
+
 export function ensureFile(path: string, content: string): void {
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, content);
@@ -44,6 +49,14 @@ export function countWorld(root = "."): CountSummary {
   };
 }
 
+export function countDomainStarterPack(root: string, domain: string): DomainStarterPackSummary {
+  const files = walkSync(join(root, "domains", domain));
+  return {
+    skills: files.filter((path) => path.endsWith("SKILL.md")).length,
+    traces: files.filter((path) => path.endsWith("TRACE.md")).length,
+  };
+}
+
 export function readText(path: string): string {
   return readFileSync(path, "utf8");
 }
@@ -58,5 +71,16 @@ export function assertMinimums(summary: CountSummary): readonly string[] {
   if (summary.rubrics < 3) failures.push(`expected at least 3 rubrics, found ${summary.rubrics}`);
   if (summary.exemplars < 3) failures.push(`expected at least 3 exemplars, found ${summary.exemplars}`);
   if (summary.contributors < 1) failures.push("expected at least 1 contributor profile");
+  return failures;
+}
+
+export function assertCodingStarterPack(summary: DomainStarterPackSummary): readonly string[] {
+  const failures: string[] = [];
+  if (summary.skills < 20 || summary.skills > 30) {
+    failures.push(`expected coding starter pack to have 20-30 skills, found ${summary.skills}`);
+  }
+  if (summary.traces < 3 || summary.traces > 5) {
+    failures.push(`expected coding starter pack to have 3-5 traces, found ${summary.traces}`);
+  }
   return failures;
 }
