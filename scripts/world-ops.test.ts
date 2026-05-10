@@ -397,6 +397,7 @@ describe("world operations", () => {
     const autoMergeWorkflow = readFileSync(".github/workflows/auto-merge.yml", "utf8");
     const featuredArchiveWorkflow = readFileSync(".github/workflows/featured-archive.yml", "utf8");
     const nightlyStatsWorkflow = readFileSync(".github/workflows/nightly-stats.yml", "utf8");
+    const revalidateWorkflow = readFileSync(".github/workflows/revalidate.yml", "utf8");
     const staleSkillsWorkflow = readFileSync(".github/workflows/stale-skills.yml", "utf8");
 
     expect(archiveWorkflow).not.toContain("placeholder");
@@ -422,6 +423,16 @@ describe("world operations", () => {
     expect(nightlyStatsWorkflow).toContain("bun run scripts/compute-stats.ts");
     expect(nightlyStatsWorkflow).toContain("git add contributors STATS.md");
     expect(nightlyStatsWorkflow).toContain("gh pr create");
+
+    expect(revalidateWorkflow).not.toContain("placeholder");
+    expect(revalidateWorkflow).toContain("bun run typecheck");
+    expect(revalidateWorkflow).toContain("bun run scripts/validate-skill.ts");
+    expect(revalidateWorkflow).toContain("bun run scripts/validate-trace.ts");
+    expect(revalidateWorkflow).toContain("bun run scripts/validate-run.ts");
+    expect(revalidateWorkflow).toContain("bun run scripts/rebuild-contributors.ts");
+    expect(revalidateWorkflow).toContain("bun run scripts/compute-stats.ts");
+    expect(revalidateWorkflow).toContain("git diff --exit-code contributors STATS.md");
+    expect(revalidateWorkflow).toContain("bun test scripts");
 
     expect(staleSkillsWorkflow).not.toContain("placeholder");
     expect(staleSkillsWorkflow).toContain("bun run scripts/flag-stale.ts");

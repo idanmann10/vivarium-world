@@ -11,3 +11,11 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bun run lint
+      - run: bun run typecheck
+      - run: bun run scripts/validate-skill.ts
+      - run: bun run scripts/validate-trace.ts
+      - run: bun run scripts/validate-run.ts
+      - run: bun run scripts/rebuild-contributors.ts
+      - run: bun run scripts/compute-stats.ts
+      - run: git diff --exit-code contributors STATS.md
+      - run: bun test scripts
