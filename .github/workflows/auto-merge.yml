@@ -18,6 +18,8 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bun run lint
+      - run: bun run typecheck
+      - run: bun run build
       - run: bun test scripts
       - run: bun run scripts/compute-signals.ts
       - run: bun run scripts/compute-trust.ts

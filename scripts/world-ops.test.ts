@@ -466,6 +466,9 @@ describe("world operations", () => {
 
     expect(autoMergeWorkflow).not.toContain("placeholder");
     expect(autoMergeWorkflow).not.toContain("echo \"Trust-weighted K-agent auto-merge starts in Phase 3.\"");
+    expect(autoMergeWorkflow).toContain("bun run typecheck");
+    expect(autoMergeWorkflow).toContain("bun run build");
+    expect(autoMergeWorkflow).toContain("bun test scripts");
     expect(autoMergeWorkflow).toContain("bun run scripts/compute-signals.ts");
     expect(autoMergeWorkflow).toContain("bun run scripts/enforce-auto-merge.ts");
     expect(autoMergeWorkflow).toContain("bun run scripts/list-held-reviews.ts");
