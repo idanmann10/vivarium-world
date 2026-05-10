@@ -6,7 +6,12 @@ import { describe, expect, test } from "bun:test";
 
 import { archiveRegressionCandidates } from "./archive-regression.js";
 import { computeStatsMarkdown } from "./compute-stats.js";
-import { canAutoMerge, computeContributorTrust, requiredValidatorCount } from "./compute-trust.js";
+import {
+  canAutoMerge,
+  computeContributorTrust,
+  countIndependentPositiveValidators,
+  requiredValidatorCount,
+} from "./compute-trust.js";
 import { flagStaleSkills } from "./flag-stale.js";
 import { listHeldReviews } from "./list-held-reviews.js";
 
@@ -66,6 +71,26 @@ describe("world operations", () => {
         positiveValidators: 3,
         requiredValidators: 3,
         regressionVotes: 1,
+      }),
+    ).toBe(false);
+  });
+
+  test("counts positive validators by independent machine fingerprint", () => {
+    const votes = [
+      { validator: "agent-a", machineFingerprint: "machine-1", positive: true },
+      { validator: "agent-b", machineFingerprint: "machine-1", positive: true },
+      { validator: "agent-c", machineFingerprint: "machine-2", positive: true },
+      { validator: "agent-d", machineFingerprint: "machine-3", positive: false },
+    ];
+
+    expect(countIndependentPositiveValidators(votes)).toBe(2);
+    expect(
+      canAutoMerge({
+        effectiveLowerBound: 0.6,
+        positiveValidators: 3,
+        requiredValidators: 3,
+        regressionVotes: 0,
+        validatorVotes: votes,
       }),
     ).toBe(false);
   });

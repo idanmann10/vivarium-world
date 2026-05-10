@@ -3,11 +3,18 @@ export interface TrustEvidence {
   readonly uses: number;
 }
 
+export interface ValidatorVote {
+  readonly validator: string;
+  readonly machineFingerprint: string;
+  readonly positive: boolean;
+}
+
 export interface AutoMergeInput {
   readonly effectiveLowerBound: number;
   readonly positiveValidators: number;
   readonly requiredValidators: number;
   readonly regressionVotes: number;
+  readonly validatorVotes?: readonly ValidatorVote[];
 }
 
 export function computeContributorTrust(evidence: readonly TrustEvidence[]): number {
@@ -27,10 +34,17 @@ export function requiredValidatorCount(trust: number): number {
   return 5;
 }
 
+export function countIndependentPositiveValidators(votes: readonly ValidatorVote[]): number {
+  return new Set(votes.filter((vote) => vote.positive).map((vote) => vote.machineFingerprint)).size;
+}
+
 export function canAutoMerge(input: AutoMergeInput): boolean {
+  const positiveValidators =
+    input.validatorVotes === undefined ? input.positiveValidators : countIndependentPositiveValidators(input.validatorVotes);
+
   return (
     input.effectiveLowerBound >= 0.55 &&
-    input.positiveValidators >= input.requiredValidators &&
+    positiveValidators >= input.requiredValidators &&
     input.regressionVotes === 0
   );
 }
