@@ -16,8 +16,8 @@ Generated from the current world contents by `scripts/compute-stats.ts`.
 
 ## Contributor Concentration
 
-- Top 5 skill share: 75.0%
-- Top 5 skill contributors: maintainer: 30 skills (75.0% of 40)
+- Top 5 skill share: 100.0%
+- Top 5 skill contributors: maintainer: 40 skills (100.0% of 40)
 
 ## Featured Picks
 

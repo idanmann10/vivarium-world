@@ -7,6 +7,7 @@ import { describe, expect, test } from "bun:test";
 import { archiveRegressionCandidates } from "./archive-regression.js";
 import { computeAutoMergeSignals, formatGitHubEnv } from "./compute-signals.js";
 import { computeStatsMarkdown } from "./compute-stats.js";
+import { rebuildContributorProfiles } from "./rebuild-contributors.js";
 import {
   canAutoMerge,
   computeContributorTrust,
@@ -64,6 +65,28 @@ describe("world operations", () => {
 
   test("keeps checked-in stats in sync with computed stats", () => {
     expect(readFileSync("STATS.md", "utf8")).toBe(`${computeStatsMarkdown(".")}\n`);
+  });
+
+  test("rebuilds contributor profiles from world artifacts", () => {
+    const root = mkdtempSync(join(tmpdir(), "world-contributors-"));
+    skill(root, "one", "contributor: agent-a");
+    skill(root, "seed", "description: seed");
+
+    const result = rebuildContributorProfiles(root);
+
+    expect(result).toEqual(["contributors/agent-a.json", "contributors/maintainer.json"]);
+    expect(JSON.parse(readFileSync(join(root, "contributors", "agent-a.json"), "utf8"))).toMatchObject({
+      handle: "agent-a",
+      domains: ["coding"],
+      contributions: { skills: 1, antiPatterns: 0, traces: 0, runsPublished: 0, skillsArchived: 0 },
+      trustScore: 0.5,
+      domainTrust: { coding: 0.5 },
+    });
+    expect(JSON.parse(readFileSync(join(root, "contributors", "maintainer.json"), "utf8"))).toMatchObject({
+      handle: "maintainer",
+      domains: ["coding"],
+      contributions: { skills: 1, antiPatterns: 0, traces: 0, runsPublished: 0, skillsArchived: 0 },
+    });
   });
 
   test("archives regression candidates", () => {
@@ -291,8 +314,9 @@ describe("world operations", () => {
     expect(autoMergeWorkflow).toContain("gh pr merge");
 
     expect(nightlyStatsWorkflow).not.toContain("placeholder");
+    expect(nightlyStatsWorkflow).toContain("bun run scripts/rebuild-contributors.ts");
     expect(nightlyStatsWorkflow).toContain("bun run scripts/compute-stats.ts");
-    expect(nightlyStatsWorkflow).toContain("git add STATS.md");
+    expect(nightlyStatsWorkflow).toContain("git add contributors STATS.md");
     expect(nightlyStatsWorkflow).toContain("gh pr create");
 
     expect(staleSkillsWorkflow).not.toContain("placeholder");
