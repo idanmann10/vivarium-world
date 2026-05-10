@@ -444,12 +444,20 @@ describe("world operations", () => {
   });
 
   test("maintenance workflows run concrete world scripts", () => {
+    const ciWorkflow = readFileSync(".github/workflows/ci.yml", "utf8");
     const archiveWorkflow = readFileSync(".github/workflows/archive-regression.yml", "utf8");
     const autoMergeWorkflow = readFileSync(".github/workflows/auto-merge.yml", "utf8");
     const featuredArchiveWorkflow = readFileSync(".github/workflows/featured-archive.yml", "utf8");
     const nightlyStatsWorkflow = readFileSync(".github/workflows/nightly-stats.yml", "utf8");
     const revalidateWorkflow = readFileSync(".github/workflows/revalidate.yml", "utf8");
     const staleSkillsWorkflow = readFileSync(".github/workflows/stale-skills.yml", "utf8");
+
+    expect(ciWorkflow).toContain("pull_request:");
+    expect(ciWorkflow).toContain("push:");
+    expect(ciWorkflow).toContain("bun run lint");
+    expect(ciWorkflow).toContain("bun run typecheck");
+    expect(ciWorkflow).toContain("bun run test");
+    expect(ciWorkflow).toContain("bun run build");
 
     expect(archiveWorkflow).not.toContain("placeholder");
     expect(archiveWorkflow).not.toContain("echo \"Archive skills after regression gates in Phase 3.\"");
