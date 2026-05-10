@@ -1,0 +1,40 @@
+name: Featured Archive
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 7 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  archive-featured:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
+      - run: bun run scripts/archive-featured.ts
+      - name: Open featured archive pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- featured/archive; then
+            echo "Featured archive already current."
+            exit 0
+          fi
+          branch="automation/archive-featured-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add featured/archive
+          git commit -m "chore: archive featured picks"
+          git push --set-upstream origin "$branch"
+          gh pr create \
+            --title "Archive featured picks" \
+            --body "Automated featured pick archive from featured-archive workflow." \
+            --base "${GITHUB_REF_NAME}" \
+            --head "$branch"

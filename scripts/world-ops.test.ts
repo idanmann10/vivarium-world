@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { describe, expect, test } from "bun:test";
 
 import { archiveRegressionCandidates } from "./archive-regression.js";
+import { archiveFeaturedWeek } from "./archive-featured.js";
 import { computeAutoMergeSignals, formatGitHubEnv } from "./compute-signals.js";
 import { computeStatsMarkdown } from "./compute-stats.js";
 import { rebuildContributorProfiles } from "./rebuild-contributors.js";
@@ -87,6 +88,17 @@ describe("world operations", () => {
       domains: ["coding"],
       contributions: { skills: 1, antiPatterns: 0, traces: 0, runsPublished: 0, skillsArchived: 0 },
     });
+  });
+
+  test("archives current featured picks by week", () => {
+    const root = mkdtempSync(join(tmpdir(), "world-featured-"));
+    mkdirSync(join(root, "featured"), { recursive: true });
+    writeFileSync(join(root, "featured", "current.md"), "# Current Featured Picks\n\n- coding.one\n", "utf8");
+
+    expect(archiveFeaturedWeek(root, "2026-20")).toEqual("featured/archive/2026-20.md");
+    expect(readFileSync(join(root, "featured", "archive", "2026-20.md"), "utf8")).toBe(
+      "# Featured Archive 2026-W20\n\n- coding.one\n",
+    );
   });
 
   test("archives regression candidates", () => {
@@ -299,6 +311,7 @@ describe("world operations", () => {
   test("maintenance workflows run concrete world scripts", () => {
     const archiveWorkflow = readFileSync(".github/workflows/archive-regression.yml", "utf8");
     const autoMergeWorkflow = readFileSync(".github/workflows/auto-merge.yml", "utf8");
+    const featuredArchiveWorkflow = readFileSync(".github/workflows/featured-archive.yml", "utf8");
     const nightlyStatsWorkflow = readFileSync(".github/workflows/nightly-stats.yml", "utf8");
     const staleSkillsWorkflow = readFileSync(".github/workflows/stale-skills.yml", "utf8");
 
@@ -312,6 +325,11 @@ describe("world operations", () => {
     expect(autoMergeWorkflow).toContain("bun run scripts/enforce-auto-merge.ts");
     expect(autoMergeWorkflow).toContain("bun run scripts/list-held-reviews.ts");
     expect(autoMergeWorkflow).toContain("gh pr merge");
+
+    expect(featuredArchiveWorkflow).not.toContain("placeholder");
+    expect(featuredArchiveWorkflow).toContain("bun run scripts/archive-featured.ts");
+    expect(featuredArchiveWorkflow).toContain("git add featured/archive");
+    expect(featuredArchiveWorkflow).toContain("gh pr create");
 
     expect(nightlyStatsWorkflow).not.toContain("placeholder");
     expect(nightlyStatsWorkflow).toContain("bun run scripts/rebuild-contributors.ts");
