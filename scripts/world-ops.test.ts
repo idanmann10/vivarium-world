@@ -73,6 +73,17 @@ describe("world operations", () => {
     expect(archiveRegressionCandidates(root)).toEqual(["domains/coding/skills/bad/SKILL.md"]);
   });
 
+  test("moves regression candidates into retired skills", () => {
+    const root = mkdtempSync(join(tmpdir(), "world-archive-move-"));
+    skill(root, "bad", "regression_votes: 3\neffective_lb: 0.3");
+
+    const result = Bun.spawnSync(["bun", join(import.meta.dir, "archive-regression.ts")], { cwd: root });
+
+    expect(result.exitCode).toBe(0);
+    expect(existsSync(join(root, "domains", "coding", "skills", "bad", "SKILL.md"))).toBe(false);
+    expect(existsSync(join(root, "retired", "skills", "coding", "bad", "SKILL.md"))).toBe(true);
+  });
+
   test("flags stale skills", () => {
     const root = mkdtempSync(join(tmpdir(), "world-stale-"));
     skill(root, "old", "last_validated_at: 2025-01-01\nnewer_alternatives: true");
