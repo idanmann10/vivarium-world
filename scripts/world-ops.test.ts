@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -28,8 +28,42 @@ describe("world operations", () => {
   test("computes stats markdown", () => {
     const root = mkdtempSync(join(tmpdir(), "world-stats-"));
     skill(root, "one", "description: one");
+    mkdirSync(join(root, "contributors"), { recursive: true });
+    writeFileSync(
+      join(root, "contributors", "maintainer.json"),
+      `${JSON.stringify({
+        handle: "maintainer",
+        contributions: { skills: 1, antiPatterns: 0, traces: 0, runsPublished: 0, skillsArchived: 0 },
+      })}\n`,
+    );
+    mkdirSync(join(root, "featured"), { recursive: true });
+    writeFileSync(join(root, "featured", "current.md"), "# Current Featured Picks\n\n- coding.one\n", "utf8");
 
-    expect(computeStatsMarkdown(root)).toContain("Skills: 1");
+    const markdown = computeStatsMarkdown(root);
+
+    expect(markdown).toContain("## Seed Snapshot");
+    expect(markdown).toContain("- Domains: 1");
+    expect(markdown).toContain("- Skills: 1");
+    expect(markdown).toContain("## Contributor Concentration");
+    expect(markdown).toContain("- Top 5 skill share: 100.0%");
+    expect(markdown).toContain("- Top 5 skill contributors: maintainer: 1 skill (100.0% of 1)");
+    expect(markdown).toContain("## Featured Picks");
+    expect(markdown).toContain("- coding.one");
+  });
+
+  test("script writes STATS.md from computed stats", () => {
+    const root = mkdtempSync(join(tmpdir(), "world-stats-write-"));
+    skill(root, "one", "description: one");
+
+    const result = Bun.spawnSync(["bun", join(import.meta.dir, "compute-stats.ts")], { cwd: root });
+
+    expect(result.exitCode).toBe(0);
+    expect(existsSync(join(root, "STATS.md"))).toBe(true);
+    expect(readFileSync(join(root, "STATS.md"), "utf8")).toBe(`${computeStatsMarkdown(root)}\n`);
+  });
+
+  test("keeps checked-in stats in sync with computed stats", () => {
+    expect(readFileSync("STATS.md", "utf8")).toBe(`${computeStatsMarkdown(".")}\n`);
   });
 
   test("archives regression candidates", () => {
@@ -218,6 +252,7 @@ describe("world operations", () => {
   test("maintenance workflows run concrete world scripts", () => {
     const archiveWorkflow = readFileSync(".github/workflows/archive-regression.yml", "utf8");
     const autoMergeWorkflow = readFileSync(".github/workflows/auto-merge.yml", "utf8");
+    const nightlyStatsWorkflow = readFileSync(".github/workflows/nightly-stats.yml", "utf8");
 
     expect(archiveWorkflow).not.toContain("placeholder");
     expect(archiveWorkflow).not.toContain("echo \"Archive skills after regression gates in Phase 3.\"");
@@ -229,5 +264,10 @@ describe("world operations", () => {
     expect(autoMergeWorkflow).toContain("bun run scripts/enforce-auto-merge.ts");
     expect(autoMergeWorkflow).toContain("bun run scripts/list-held-reviews.ts");
     expect(autoMergeWorkflow).toContain("gh pr merge");
+
+    expect(nightlyStatsWorkflow).not.toContain("placeholder");
+    expect(nightlyStatsWorkflow).toContain("bun run scripts/compute-stats.ts");
+    expect(nightlyStatsWorkflow).toContain("git add STATS.md");
+    expect(nightlyStatsWorkflow).toContain("gh pr create");
   });
 });

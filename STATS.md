@@ -1,6 +1,8 @@
 # Stats
 
-Generated nightly after Phase 3. Phase 0 seed snapshot:
+Generated from the current world contents by `scripts/compute-stats.ts`.
+
+## Seed Snapshot
 
 - Domains: 3
 - Skills: 40
@@ -11,3 +13,14 @@ Generated nightly after Phase 3. Phase 0 seed snapshot:
 - Rubrics: 3
 - Exemplars: 3
 - Contributor profiles: 1
+
+## Contributor Concentration
+
+- Top 5 skill share: 75.0%
+- Top 5 skill contributors: maintainer: 30 skills (75.0% of 40)
+
+## Featured Picks
+
+- coding.inspect-before-edit
+- research.primary-source-first
+- summarization.preserve-decisions

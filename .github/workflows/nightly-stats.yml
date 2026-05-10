@@ -1,8 +1,13 @@
 name: Nightly Stats
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 4 * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   stats:
@@ -11,4 +16,25 @@ jobs:
       - uses: actions/checkout@v5
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
+      - run: bun run lint
       - run: bun run scripts/compute-stats.ts
+      - name: Open stats pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- STATS.md; then
+            echo "STATS.md already current."
+            exit 0
+          fi
+          branch="automation/rebuild-stats-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add STATS.md
+          git commit -m "chore: rebuild stats"
+          git push --set-upstream origin "$branch"
+          gh pr create \
+            --title "Rebuild world stats" \
+            --body "Automated STATS.md rebuild from nightly-stats workflow." \
+            --base "${GITHUB_REF_NAME}" \
+            --head "$branch"

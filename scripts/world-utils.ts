@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, join } from "node:path";
 
 export interface CountSummary {
+  readonly domains: number;
   readonly skills: number;
   readonly antiPatterns: number;
   readonly traces: number;
@@ -36,8 +37,13 @@ export function walkSync(directory: string): string[] {
 
 export function countWorld(root = "."): CountSummary {
   const files = walkSync(root);
+  const domainsRoot = join(root, "domains");
+  const domains = existsSync(domainsRoot)
+    ? readdirSync(domainsRoot, { withFileTypes: true }).filter((entry) => entry.isDirectory()).length
+    : 0;
 
   return {
+    domains,
     skills: files.filter((path) => path.endsWith("SKILL.md")).length,
     antiPatterns: files.filter((path) => path.endsWith("ANTI-PATTERN.md")).length,
     traces: files.filter((path) => path.endsWith("TRACE.md")).length,
