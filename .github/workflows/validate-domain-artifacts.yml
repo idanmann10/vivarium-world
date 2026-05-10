@@ -1,0 +1,17 @@
+name: Validate Domain Artifacts
+
+on:
+  pull_request:
+    paths:
+      - "domains/**/curriculum.md"
+      - "domains/**/rubrics/**"
+      - "domains/**/exemplars/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run scripts/validate-domain-artifacts.ts

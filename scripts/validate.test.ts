@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { validateAntiPatternFiles } from "./validate-anti-pattern.js";
+import { validateDomainArtifactFiles } from "./validate-domain-artifacts.js";
 import { validateRunFiles } from "./validate-run.js";
 import { validateTraceFiles } from "./validate-trace.js";
 import { assertCodingStarterPack, assertMinimums, countDomainStarterPack, countWorld } from "./world-utils.js";
@@ -52,6 +53,27 @@ describe("world seed content", () => {
     expect(validateAntiPatternFiles(root)).toEqual([
       "domains/coding/anti-patterns/bad/ANTI-PATTERN.md: invalid structure",
       "domains/coding/anti-patterns/leaky/ANTI-PATTERN.md: possible PII",
+    ]);
+  });
+
+  test("domain artifact validator rejects malformed curricula, rubrics, and exemplars", () => {
+    const root = mkdtempSync(join(tmpdir(), "world-domain-artifact-validation-"));
+    const domainRoot = join(root, "domains", "coding");
+    mkdirSync(join(domainRoot, "rubrics"), { recursive: true });
+    mkdirSync(join(domainRoot, "exemplars", "baseline"), { recursive: true });
+    mkdirSync(join(domainRoot, "exemplars", "leaky"), { recursive: true });
+    writeFileSync(join(domainRoot, "curriculum.md"), "# coding Curriculum\n\nEmail ida@example.com.\n", "utf8");
+    writeFileSync(join(domainRoot, "rubrics", "bad.md"), "# Bad Rubric\n\nNo criteria.\n", "utf8");
+    writeFileSync(join(domainRoot, "exemplars", "baseline", "output.md"), "# coding Exemplar\n\nLooks ok.\n", "utf8");
+    writeFileSync(join(domainRoot, "exemplars", "leaky", "output.md"), "# coding Exemplar\n\nUse Bearer sk-secret.\n", "utf8");
+    writeFileSync(join(domainRoot, "exemplars", "leaky", "meta.yaml"), "domain: coding\nkind: exemplar\n", "utf8");
+
+    expect(validateDomainArtifactFiles(root)).toEqual([
+      "domains/coding/curriculum.md: invalid structure",
+      "domains/coding/curriculum.md: possible PII",
+      "domains/coding/exemplars/baseline/output.md: missing meta.yaml",
+      "domains/coding/exemplars/leaky/output.md: possible PII",
+      "domains/coding/rubrics/bad.md: invalid structure",
     ]);
   });
 });

@@ -489,6 +489,7 @@ describe("world operations", () => {
     const nightlyStatsWorkflow = readFileSync(".github/workflows/nightly-stats.yml", "utf8");
     const revalidateWorkflow = readFileSync(".github/workflows/revalidate.yml", "utf8");
     const staleSkillsWorkflow = readFileSync(".github/workflows/stale-skills.yml", "utf8");
+    const domainArtifactsWorkflow = readFileSync(".github/workflows/validate-domain-artifacts.yml", "utf8");
 
     expect(ciWorkflow).toContain("pull_request:");
     expect(ciWorkflow).toContain("push:");
@@ -532,6 +533,7 @@ describe("world operations", () => {
     expect(revalidateWorkflow).toContain("bun run build");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-skill.ts");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-anti-pattern.ts");
+    expect(revalidateWorkflow).toContain("bun run scripts/validate-domain-artifacts.ts");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-trace.ts");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-run.ts");
     expect(revalidateWorkflow).toContain("bun run scripts/rebuild-contributors.ts");
@@ -549,5 +551,11 @@ describe("world operations", () => {
     expect(antiPatternWorkflow).toContain("pull_request:");
     expect(antiPatternWorkflow).toContain("domains/**/anti-patterns/**");
     expect(antiPatternWorkflow).toContain("bun run scripts/validate-anti-pattern.ts");
+
+    expect(domainArtifactsWorkflow).toContain("pull_request:");
+    expect(domainArtifactsWorkflow).toContain("domains/**/curriculum.md");
+    expect(domainArtifactsWorkflow).toContain("domains/**/rubrics/**");
+    expect(domainArtifactsWorkflow).toContain("domains/**/exemplars/**");
+    expect(domainArtifactsWorkflow).toContain("bun run scripts/validate-domain-artifacts.ts");
   });
 });
