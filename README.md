@@ -26,3 +26,5 @@ The auto-merge workflow fails closed until live signal collection provides trust
 - `WORLD_EFFECTIVE_LB`
 - `WORLD_REGRESSION_VOTES`
 - `WORLD_POSITIVE_VALIDATORS` or `WORLD_VALIDATOR_VOTES_JSON`
+
+`scripts/compute-signals.ts` reads contribution proposal metadata and writes these values to `$GITHUB_ENV` when it runs inside GitHub Actions. Proposal frontmatter can provide `contributor_trust`, `effective_lb`, `regression_votes`, `positive_validators`, and `validator_votes_json`.

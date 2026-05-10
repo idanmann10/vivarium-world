@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { describe, expect, test } from "bun:test";
 
 import { archiveRegressionCandidates } from "./archive-regression.js";
+import { computeAutoMergeSignals, formatGitHubEnv } from "./compute-signals.js";
 import { computeStatsMarkdown } from "./compute-stats.js";
 import {
   canAutoMerge,
@@ -93,6 +94,45 @@ describe("world operations", () => {
         validatorVotes: votes,
       }),
     ).toBe(false);
+  });
+
+  test("computes auto-merge signal env values from contribution proposals", () => {
+    const root = mkdtempSync(join(tmpdir(), "world-signals-"));
+    const directory = join(root, "proposals", "skills", "coding", "gated-skill");
+    mkdirSync(directory, { recursive: true });
+    writeFileSync(
+      join(directory, "SKILL.md"),
+      [
+        "---",
+        "contributor: trusted-agent",
+        "contributor_trust: 0.82",
+        "effective_lb: 0.61",
+        "regression_votes: 0",
+        "positive_validators: 2",
+        'validator_votes_json: [{"validator":"agent-a","machineFingerprint":"machine-1","positive":true},{"validator":"agent-b","machineFingerprint":"machine-2","positive":true},{"validator":"agent-c","machineFingerprint":"machine-3","positive":false}]',
+        "---",
+        "",
+        "# Gated Skill",
+        "",
+        "Body.",
+      ].join("\n"),
+    );
+
+    const signals = computeAutoMergeSignals(root);
+
+    expect(signals).toEqual({
+      contributorTrust: 0.82,
+      effectiveLowerBound: 0.61,
+      positiveValidators: 2,
+      regressionVotes: 0,
+      validatorVotes: [
+        { validator: "agent-a", machineFingerprint: "machine-1", positive: true },
+        { validator: "agent-b", machineFingerprint: "machine-2", positive: true },
+        { validator: "agent-c", machineFingerprint: "machine-3", positive: false },
+      ],
+    });
+    expect(formatGitHubEnv(signals)).toContain("WORLD_EFFECTIVE_LB=0.61");
+    expect(formatGitHubEnv(signals)).toContain("WORLD_VALIDATOR_VOTES_JSON=");
   });
 
   test("evaluates auto-merge gates with trust thresholds and manual holds", async () => {
