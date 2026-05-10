@@ -10,4 +10,4 @@ Content conventions:
 - Runs include `RUN.md`, `episodes.jsonl`, and `meta.yaml`.
 - Curricula are domain-level `curriculum.md` files.
 
-Run `bun run lint && bun run typecheck && bun run test` before publishing content changes.
+Run `bun run lint && bun run typecheck && bun run test && bun run build` before publishing content changes.

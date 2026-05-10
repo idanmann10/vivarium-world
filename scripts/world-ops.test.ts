@@ -102,6 +102,7 @@ describe("world operations", () => {
       "featured/README.md": ["featured/current.md", "featured/archive", "maintainer", "weekly", "STATS.md"],
       "proposals/README.md": ["skills", "traces", "runs", "anti-patterns", "RFC", "manual review"],
       "retired/README.md": ["retired/skills", "lineage", "provenance", "regression", "stale"],
+      "AGENTS.md": ["bun run lint", "bun run typecheck", "bun run test", "bun run build"],
     } as const;
 
     for (const [path, terms] of Object.entries(docs)) {
