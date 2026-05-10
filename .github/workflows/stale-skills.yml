@@ -1,8 +1,13 @@
 name: Stale Skills
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 5 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   stale:
@@ -11,4 +16,25 @@ jobs:
       - uses: actions/checkout@v5
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
+      - run: bun run lint
       - run: bun run scripts/flag-stale.ts
+      - name: Open stale skills pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- domains; then
+            echo "No stale skills to propose."
+            exit 0
+          fi
+          branch="automation/mark-stale-skills-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add domains
+          git commit -m "chore: mark stale skills"
+          git push --set-upstream origin "$branch"
+          gh pr create \
+            --title "Mark stale skills" \
+            --body "Automated stale marker proposal from stale-skills workflow." \
+            --base "${GITHUB_REF_NAME}" \
+            --head "$branch"

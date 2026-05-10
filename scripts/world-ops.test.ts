@@ -93,6 +93,19 @@ describe("world operations", () => {
     ]);
   });
 
+  test("script marks stale skills in frontmatter", () => {
+    const root = mkdtempSync(join(tmpdir(), "world-stale-marker-"));
+    const path = skill(root, "old", "last_validated_at: 2025-01-01\nnewer_alternatives: true");
+
+    const result = Bun.spawnSync(["bun", join(import.meta.dir, "flag-stale.ts")], {
+      cwd: root,
+      env: { ...process.env, WORLD_STALE_NOW: "2026-05-09T00:00:00.000Z" },
+    });
+
+    expect(result.exitCode).toBe(0);
+    expect(readFileSync(path, "utf8")).toContain("stale: true\n");
+  });
+
   test("computes trust and required validator counts", () => {
     const lowTrust = computeContributorTrust([{ lowerBound: 0.1, uses: 1 }]);
     const highTrust = computeContributorTrust([{ lowerBound: 0.9, uses: 100 }]);
@@ -264,6 +277,7 @@ describe("world operations", () => {
     const archiveWorkflow = readFileSync(".github/workflows/archive-regression.yml", "utf8");
     const autoMergeWorkflow = readFileSync(".github/workflows/auto-merge.yml", "utf8");
     const nightlyStatsWorkflow = readFileSync(".github/workflows/nightly-stats.yml", "utf8");
+    const staleSkillsWorkflow = readFileSync(".github/workflows/stale-skills.yml", "utf8");
 
     expect(archiveWorkflow).not.toContain("placeholder");
     expect(archiveWorkflow).not.toContain("echo \"Archive skills after regression gates in Phase 3.\"");
@@ -280,5 +294,10 @@ describe("world operations", () => {
     expect(nightlyStatsWorkflow).toContain("bun run scripts/compute-stats.ts");
     expect(nightlyStatsWorkflow).toContain("git add STATS.md");
     expect(nightlyStatsWorkflow).toContain("gh pr create");
+
+    expect(staleSkillsWorkflow).not.toContain("placeholder");
+    expect(staleSkillsWorkflow).toContain("bun run scripts/flag-stale.ts");
+    expect(staleSkillsWorkflow).toContain("git add domains");
+    expect(staleSkillsWorkflow).toContain("gh pr create");
   });
 });
