@@ -308,6 +308,49 @@ describe("world operations", () => {
     ]);
   });
 
+  test("flags implausible pull telemetry concentration", async () => {
+    const scriptPath = join(import.meta.dir, "check-telemetry.ts");
+    expect(existsSync(scriptPath)).toBe(true);
+
+    const telemetryModule = await import("./check-telemetry.js");
+    const detectTelemetryAnomalies = (
+      telemetryModule as typeof telemetryModule & {
+        readonly detectTelemetryAnomalies: (
+          events: readonly {
+            readonly artifactId: string;
+            readonly kind: "pull" | "use";
+            readonly timestamp: string;
+            readonly ipHash?: string;
+            readonly installId?: string;
+            readonly agentId?: string;
+          }[],
+        ) => readonly {
+          readonly artifactId: string;
+          readonly reason: "implausible-telemetry";
+          readonly eventCount: number;
+          readonly distinctSources: number;
+          readonly windowMinutes: number;
+        }[];
+      }
+    ).detectTelemetryAnomalies;
+    const events = Array.from({ length: 500 }, (_, index) => ({
+      artifactId: "domains/coding/skills/hot/SKILL.md",
+      kind: "pull" as const,
+      timestamp: new Date(Date.UTC(2026, 4, 10, 12, index % 60, 0)).toISOString(),
+      ipHash: `ip-${index % 5}`,
+    }));
+
+    expect(detectTelemetryAnomalies(events)).toEqual([
+      {
+        artifactId: "domains/coding/skills/hot/SKILL.md",
+        reason: "implausible-telemetry",
+        eventCount: 500,
+        distinctSources: 5,
+        windowMinutes: 60,
+      },
+    ]);
+  });
+
   test("maintenance workflows run concrete world scripts", () => {
     const archiveWorkflow = readFileSync(".github/workflows/archive-regression.yml", "utf8");
     const autoMergeWorkflow = readFileSync(".github/workflows/auto-merge.yml", "utf8");
@@ -324,6 +367,7 @@ describe("world operations", () => {
     expect(autoMergeWorkflow).toContain("bun run scripts/compute-signals.ts");
     expect(autoMergeWorkflow).toContain("bun run scripts/enforce-auto-merge.ts");
     expect(autoMergeWorkflow).toContain("bun run scripts/list-held-reviews.ts");
+    expect(autoMergeWorkflow).toContain("bun run scripts/check-telemetry.ts");
     expect(autoMergeWorkflow).toContain("gh pr merge");
 
     expect(featuredArchiveWorkflow).not.toContain("placeholder");
