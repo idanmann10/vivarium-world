@@ -88,6 +88,37 @@ describe("world operations", () => {
     expect(readme).toContain("- Top 5 skill share: 100.0%");
   });
 
+  test("documents world governance and directory contracts", () => {
+    const docs = {
+      "CONSTITUTION.md": ["Search the world", "Predict outcomes", "Reflect", "Refuse", "provenance", "private"],
+      "CONTRIBUTING.md": [
+        "Discussion",
+        "auto-merge",
+        "validator",
+        "regression",
+        "first ten",
+        "PULL_REQUEST_TEMPLATE/new-skill.md",
+      ],
+      "featured/README.md": ["featured/current.md", "featured/archive", "maintainer", "weekly", "STATS.md"],
+      "proposals/README.md": ["skills", "traces", "runs", "anti-patterns", "RFC", "manual review"],
+      "retired/README.md": ["retired/skills", "lineage", "provenance", "regression", "stale"],
+    } as const;
+
+    for (const [path, terms] of Object.entries(docs)) {
+      const body = readFileSync(path, "utf8");
+      for (const term of terms) {
+        expect(body).toContain(term);
+      }
+    }
+
+    for (const domain of ["coding", "research", "summarization"]) {
+      const body = readFileSync(join("domains", domain, "README.md"), "utf8");
+      for (const term of ["skills/", "traces/", "anti-patterns/", "rubrics/", "exemplars/", "curriculum.md"]) {
+        expect(body).toContain(term);
+      }
+    }
+  });
+
   test("rebuilds contributor profiles from world artifacts", () => {
     const root = mkdtempSync(join(tmpdir(), "world-contributors-"));
     skill(root, "one", "contributor: agent-a");
