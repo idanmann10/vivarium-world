@@ -5,6 +5,10 @@ export interface HeldReview {
   readonly path: string;
   readonly contributor: string;
   readonly reason: "first-ten-contributions";
+  readonly anonymizerSummary: {
+    readonly redactions: number;
+    readonly preview: string;
+  };
 }
 
 function metadataValue(text: string, key: string): string | undefined {
@@ -19,6 +23,22 @@ function isContributionProposal(path: string): boolean {
     /^proposals\/traces\/[^/]+\/[^/]+\/TRACE\.md$/,
     /^proposals\/runs\/[^/]+\/RUN\.md$/,
   ].some((pattern) => pattern.test(normalized));
+}
+
+function anonymizerSummary(text: string): HeldReview["anonymizerSummary"] {
+  const patterns = [/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, /Bearer\s+[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*/g];
+  let redactions = 0;
+  const preview = patterns.reduce((current, pattern) => {
+    return current.replace(pattern, (match) => {
+      redactions += 1;
+      return match.startsWith("Bearer ") ? "Bearer [REDACTED_TOKEN]" : "[REDACTED_EMAIL]";
+    });
+  }, text);
+
+  return {
+    redactions,
+    preview: preview.slice(0, 1000),
+  };
 }
 
 export function listHeldReviews(root = "."): readonly HeldReview[] {
@@ -42,6 +62,7 @@ export function listHeldReviews(root = "."): readonly HeldReview[] {
           path: relativePath,
           contributor,
           reason: "first-ten-contributions" as const,
+          anonymizerSummary: anonymizerSummary(text),
         },
       ];
     });

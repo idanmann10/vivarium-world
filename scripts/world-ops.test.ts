@@ -159,7 +159,7 @@ describe("world operations", () => {
     mkdirSync(directory, { recursive: true });
     writeFileSync(
       join(directory, "SKILL.md"),
-      "---\ncontributor: new-agent\ncontributor_contributions: 2\n---\n\n# New Skill\n\nBody.\n",
+      "---\ncontributor: new-agent\ncontributor_contributions: 2\n---\n\n# New Skill\n\nEmail ida@example.com with Bearer sk-secret.\n",
     );
 
     expect(listHeldReviews(root)).toEqual([
@@ -167,6 +167,10 @@ describe("world operations", () => {
         path: "proposals/skills/coding/new-skill/SKILL.md",
         contributor: "new-agent",
         reason: "first-ten-contributions",
+        anonymizerSummary: {
+          redactions: 2,
+          preview: "---\ncontributor: new-agent\ncontributor_contributions: 2\n---\n\n# New Skill\n\nEmail [REDACTED_EMAIL] with Bearer [REDACTED_TOKEN].\n",
+        },
       },
     ]);
   });
