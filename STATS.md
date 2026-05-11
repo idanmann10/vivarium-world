@@ -5,9 +5,9 @@ Generated from the current world contents by `scripts/compute-stats.ts`.
 ## Seed Snapshot
 
 - Domains: 3
-- Skills: 40
-- Anti-patterns: 6
-- Traces: 7
+- Skills: 41
+- Anti-patterns: 7
+- Traces: 8
 - Runs: 6
 - Curricula: 3
 - Rubrics: 3
@@ -16,8 +16,8 @@ Generated from the current world contents by `scripts/compute-stats.ts`.
 
 ## Contributor Concentration
 
-- Top 5 skill share: 100.0%
-- Top 5 skill contributors: maintainer: 40 skills (100.0% of 40)
+- Top 5 skill share: 97.6%
+- Top 5 skill contributors: maintainer: 40 skills (97.6% of 41)
 
 ## Featured Picks
 

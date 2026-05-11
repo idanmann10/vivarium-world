@@ -1,0 +1,4 @@
+{"index":1,"action":"Start coding run","annotation":"Run goal captured before planning."}
+{"index":2,"action":"Use local-provider.execute","annotation":"Action recorded during a successful run."}
+{"index":3,"action":"Observe result","annotation":"Observation retained as trace evidence."}
+{"index":4,"action":"Validate outcome","annotation":"Validation passed with score 0.8."}
