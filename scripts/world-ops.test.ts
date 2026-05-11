@@ -578,4 +578,26 @@ describe("world operations", () => {
     expect(dependabot).toContain("interval: weekly");
     expect(dependabot).toContain("open-pull-requests-limit: 5");
   });
+
+  test("issue templates route bugs, feature requests, and support links", () => {
+    const bug = readFileSync(".github/ISSUE_TEMPLATE/bug_report.yml", "utf8");
+    const feature = readFileSync(".github/ISSUE_TEMPLATE/feature_request.yml", "utf8");
+    const config = readFileSync(".github/ISSUE_TEMPLATE/config.yml", "utf8");
+
+    expect(bug).toContain("name: Bug report");
+    expect(bug).toContain("Affected world area");
+    expect(bug).toContain("Evidence or reproduction");
+    expect(bug).toContain("PII or credential risk");
+    expect(bug).toContain("labels:");
+
+    expect(feature).toContain("name: Feature request");
+    expect(feature).toContain("World area");
+    expect(feature).toContain("Proposed change");
+    expect(feature).toContain("Validation impact");
+    expect(feature).toContain("labels:");
+
+    expect(config).toContain("blank_issues_enabled: false");
+    expect(config).toContain("Security reports");
+    expect(config).toContain("RFC discussions");
+  });
 });
