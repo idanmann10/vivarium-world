@@ -13,6 +13,10 @@ import { assertCodingStarterPack, assertMinimums, countDomainStarterPack, countW
 const worldRootDocs = {
   "README.md": [
     "Vivarium World",
+    "[![CI](https://github.com/idanmann10/vivarium-world/actions/workflows/ci.yml/badge.svg)](https://github.com/idanmann10/vivarium-world/actions/workflows/ci.yml)",
+    "[![Validate Proposals](https://github.com/idanmann10/vivarium-world/actions/workflows/validate-proposals.yml/badge.svg)](https://github.com/idanmann10/vivarium-world/actions/workflows/validate-proposals.yml)",
+    "[![License: MIT + CC0](https://img.shields.io/badge/License-MIT%20%2B%20CC0-blue.svg)](LICENSE)",
+    "![Commons: World](https://img.shields.io/badge/commons-world-2f855a)",
     "open commons",
     "STATS.md",
     "featured",
