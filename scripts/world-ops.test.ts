@@ -515,6 +515,9 @@ describe("world operations", () => {
     expect(autoMergeWorkflow).toContain("bun run scripts/check-telemetry.ts");
     expect(autoMergeWorkflow).toContain("bun run scripts/check-veto-window.ts");
     expect(autoMergeWorkflow).toContain("gh pr merge");
+    expect(autoMergeWorkflow).toContain("ready_for_review");
+    expect(autoMergeWorkflow).toContain("github.event_name == 'workflow_dispatch'");
+    expect(autoMergeWorkflow).toContain("github.event.pull_request.draft == false");
 
     expect(featuredArchiveWorkflow).not.toContain("placeholder");
     expect(featuredArchiveWorkflow).toContain("bun run scripts/archive-featured.ts");
