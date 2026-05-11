@@ -579,6 +579,25 @@ describe("world operations", () => {
     expect(dependabot).toContain("open-pull-requests-limit: 5");
   });
 
+  test("CODEOWNERS routes world artifacts and governance surfaces to the maintainer", () => {
+    const codeowners = readFileSync(".github/CODEOWNERS", "utf8");
+
+    for (const rule of [
+      "* @idanmann10",
+      "domains/ @idanmann10",
+      "proposals/ @idanmann10",
+      "featured/ @idanmann10",
+      "retired/ @idanmann10",
+      "contributors/ @idanmann10",
+      "scripts/ @idanmann10",
+      ".github/ @idanmann10",
+      "SECURITY.md @idanmann10",
+      "RELEASING.md @idanmann10",
+    ]) {
+      expect(codeowners).toContain(rule);
+    }
+  });
+
   test("issue templates route bugs, feature requests, and support links", () => {
     const bug = readFileSync(".github/ISSUE_TEMPLATE/bug_report.yml", "utf8");
     const feature = readFileSync(".github/ISSUE_TEMPLATE/feature_request.yml", "utf8");
