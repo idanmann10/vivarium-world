@@ -93,8 +93,8 @@ describe("world operations", () => {
     }
 
     expect(readme).toContain("- coding.inspect-before-edit");
-    expect(readme).toContain("- Skills: 40");
-    expect(readme).toContain("- Top 5 skill share: 100.0%");
+    expect(readme).toContain("- Skills: 41");
+    expect(readme).toContain("- Top 5 skill share: 97.6%");
   });
 
   test("documents world governance and directory contracts", () => {

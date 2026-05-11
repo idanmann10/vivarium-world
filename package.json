@@ -1,6 +1,17 @@
 {
-  "name": "the-world",
+  "name": "vivarium-world",
+  "description": "Git-hosted cultural commons for Vivarium skills, anti-patterns, traces, runs, curricula, trust gates, and validation workflows.",
+  "license": "MIT",
+  "homepage": "https://github.com/idanmann10/vivarium-world",
+  "bugs": {
+    "url": "https://github.com/idanmann10/vivarium-world/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/idanmann10/vivarium-world.git"
+  },
   "private": true,
+  "packageManager": "bun@1.3.11",
   "type": "module",
   "scripts": {
     "build": "bun run scripts/build.ts",
