@@ -567,4 +567,15 @@ describe("world operations", () => {
     expect(proposalsWorkflow).toContain("proposals/**");
     expect(proposalsWorkflow).toContain("bun run scripts/validate-proposals.ts");
   });
+
+  test("Dependabot keeps Bun dependencies and GitHub Actions current", () => {
+    const dependabot = readFileSync(".github/dependabot.yml", "utf8");
+
+    expect(dependabot).toContain("version: 2");
+    expect(dependabot).toContain('package-ecosystem: "bun"');
+    expect(dependabot).toContain('package-ecosystem: "github-actions"');
+    expect(dependabot).toContain('directory: "/"');
+    expect(dependabot).toContain("interval: weekly");
+    expect(dependabot).toContain("open-pull-requests-limit: 5");
+  });
 });
