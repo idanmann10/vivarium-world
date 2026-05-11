@@ -29,6 +29,7 @@ complete.
 6. Confirm auto-merge workflows remain fail-closed for missing trust, missing validators, regression votes, suspicious telemetry, and maintainer veto labels.
 7. Archive weekly featured picks when publishing a weekly curation checkpoint.
 8. Confirm `LICENSE` still states the MIT tooling license and CC0 dedication for public world content.
+9. Confirm the canonical world is still a public repository before calling the checkpoint an open commons release.
 
 ## Release Notes
 

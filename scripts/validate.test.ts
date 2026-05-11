@@ -54,6 +54,7 @@ const worldRootDocs = {
     "auto-merge",
     "LICENSE",
     "CC0",
+    "public repository",
   ],
   LICENSE: ["MIT License", "Vivarium contributors", "CC0"],
 } as const;
