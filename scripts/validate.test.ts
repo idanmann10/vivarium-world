@@ -60,6 +60,7 @@ const worldRootDocs = {
     "LICENSE",
     "CC0",
     "public repository",
+    "launch:security-audit",
     "CodeQL",
     "secret scanning",
     "push protection",
@@ -209,5 +210,6 @@ describe("world seed content", () => {
     expect(packageJson.bugs?.url).toContain("vivarium-world/issues");
     expect(packageJson.homepage).toContain("vivarium-world");
     expect(packageJson.scripts?.["public-release:scan"]).toBe("bun run scripts/public-release-scan.ts");
+    expect(packageJson.scripts?.["launch:security-audit"]).toBe("bun run scripts/launch-security-audit.ts");
   });
 });

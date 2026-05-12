@@ -11,6 +11,7 @@ complete.
    ```bash
    bun run scripts/validate-world.ts
    bun run lint
+   bun run launch:security-audit
    bun run public-release:scan
    bun run typecheck
    bun run test
@@ -32,6 +33,7 @@ complete.
 8. Confirm `LICENSE` still states the MIT tooling license and CC0 dedication for public world content.
 9. Confirm the canonical world is still a public repository before calling the checkpoint an open commons release.
 10. Verify the GitHub security posture before announcing a publication checkpoint:
+    - run `bun run launch:security-audit`
     - private vulnerability reporting is enabled
     - secret scanning is enabled
     - push protection is enabled

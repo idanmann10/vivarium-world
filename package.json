@@ -16,6 +16,7 @@
   "scripts": {
     "build": "bun run scripts/build.ts",
     "lint": "bun run scripts/validate-world.ts",
+    "launch:security-audit": "bun run scripts/launch-security-audit.ts",
     "public-release:scan": "bun run scripts/public-release-scan.ts",
     "seed": "bun run scripts/seed-content.ts",
     "test": "bun test scripts",
