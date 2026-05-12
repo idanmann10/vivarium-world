@@ -35,6 +35,8 @@ complete.
     - secret scanning is enabled
     - push protection is enabled
     - CodeQL has run and code scanning alerts have been reviewed
+11. Record an explicit maintainer decision for `main` branch protection or repository rulesets. Do not enable or
+    change branch protection or repository rulesets without explicit approval for this repository.
 
 ## Release Notes
 
