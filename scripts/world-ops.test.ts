@@ -510,6 +510,7 @@ describe("world operations", () => {
     expect(ciWorkflow).toContain("pull_request:");
     expect(ciWorkflow).toContain("push:");
     expect(ciWorkflow).toContain("bun run lint");
+    expect(ciWorkflow).toContain("bun run public-release:scan");
     expect(ciWorkflow).toContain("bun run typecheck");
     expect(ciWorkflow).toContain("bun run test");
     expect(ciWorkflow).toContain("bun run build");

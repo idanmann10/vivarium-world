@@ -52,6 +52,7 @@ const worldRootDocs = {
   "RELEASING.md": [
     "Vivarium World",
     "release",
+    "public-release:scan",
     "validate",
     "STATS.md",
     "featured",
@@ -82,6 +83,7 @@ interface WorldPackageJson {
     readonly url?: string;
   };
   readonly homepage?: string;
+  readonly scripts?: Record<string, string>;
 }
 
 describe("world seed content", () => {
@@ -206,5 +208,6 @@ describe("world seed content", () => {
     expect(packageJson.repository?.url).toContain("vivarium-world");
     expect(packageJson.bugs?.url).toContain("vivarium-world/issues");
     expect(packageJson.homepage).toContain("vivarium-world");
+    expect(packageJson.scripts?.["public-release:scan"]).toBe("bun run scripts/public-release-scan.ts");
   });
 });

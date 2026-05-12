@@ -11,6 +11,7 @@ complete.
    ```bash
    bun run scripts/validate-world.ts
    bun run lint
+   bun run public-release:scan
    bun run typecheck
    bun run test
    bun run build
