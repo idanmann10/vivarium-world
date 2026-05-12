@@ -30,6 +30,11 @@ complete.
 7. Archive weekly featured picks when publishing a weekly curation checkpoint.
 8. Confirm `LICENSE` still states the MIT tooling license and CC0 dedication for public world content.
 9. Confirm the canonical world is still a public repository before calling the checkpoint an open commons release.
+10. Verify the GitHub security posture before announcing a publication checkpoint:
+    - private vulnerability reporting is enabled
+    - secret scanning is enabled
+    - push protection is enabled
+    - CodeQL has run and code scanning alerts have been reviewed
 
 ## Release Notes
 

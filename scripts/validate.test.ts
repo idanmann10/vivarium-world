@@ -59,6 +59,10 @@ const worldRootDocs = {
     "LICENSE",
     "CC0",
     "public repository",
+    "CodeQL",
+    "secret scanning",
+    "push protection",
+    "private vulnerability reporting",
   ],
   LICENSE: ["MIT License", "Vivarium contributors", "CC0"],
 } as const;
