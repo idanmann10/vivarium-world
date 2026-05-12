@@ -40,6 +40,12 @@ complete.
     - CodeQL has run and code scanning alerts have been reviewed
 11. Record an explicit maintainer decision for `main` branch protection or repository rulesets. Do not enable or
     change branch protection or repository rulesets without explicit approval for this repository.
+    If approved, use this recommended baseline:
+    - Require pull request reviews before merging.
+    - Require status checks to pass before merging, including validation, release scans, and CodeQL.
+    - Block force pushes.
+    - Block deletions.
+    - Require linear history unless the maintainer records a different release policy.
 
 ## Release Notes
 
