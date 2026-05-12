@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security reports
+    url: https://github.com/idanmann10/vivarium-world/security/policy
+    about: Report PII, credential, private-world, or exploit risks privately.
+  - name: RFC discussions
+    url: https://github.com/idanmann10/vivarium-world/discussions/categories/rfc
+    about: Start larger governance, format, or curation proposals as RFC discussions.

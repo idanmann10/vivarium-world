@@ -1,0 +1,15 @@
+# Default ownership for the Vivarium World commons.
+* @idanmann10
+
+# Public world artifacts and governance.
+domains/ @idanmann10
+proposals/ @idanmann10
+featured/ @idanmann10
+retired/ @idanmann10
+contributors/ @idanmann10
+
+# Validation, workflows, and policy docs.
+scripts/ @idanmann10
+.github/ @idanmann10
+SECURITY.md @idanmann10
+RELEASING.md @idanmann10
