@@ -112,6 +112,18 @@ describe("world operations", () => {
       "proposals/README.md": ["skills", "traces", "runs", "anti-patterns", "RFC", "manual review"],
       "retired/README.md": ["retired/skills", "lineage", "provenance", "regression", "stale"],
       "AGENTS.md": ["bun run lint", "bun run typecheck", "bun run test", "bun run build"],
+      ".github/PULL_REQUEST_TEMPLATE.md": [
+        "Vivarium World Pull Request",
+        "Artifact-specific templates",
+        "new-skill.md",
+        "new-trace.md",
+        "new-run.md",
+        "new-anti-pattern.md",
+        "bun run lint",
+        "bun run typecheck",
+        "bun run test",
+        "bun run build",
+      ],
       ".github/PULL_REQUEST_TEMPLATE/new-skill.md": [
         "bun run scripts/validate-skill.ts",
         "bun run lint",
