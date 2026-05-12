@@ -549,6 +549,7 @@ describe("world operations", () => {
     expect(nightlyStatsWorkflow).toContain("gh pr create");
 
     expect(revalidateWorkflow).not.toContain("placeholder");
+    expect(revalidateWorkflow).toContain("bun run public-release:scan");
     expect(revalidateWorkflow).toContain("bun run typecheck");
     expect(revalidateWorkflow).toContain("bun run build");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-skill.ts");
