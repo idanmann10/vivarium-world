@@ -88,6 +88,7 @@ describe("world operations", () => {
       "[proposals/](proposals/)",
       "[retired/](retired/)",
       "[.github/workflows/](.github/workflows/)",
+      "[SUPPORT.md](SUPPORT.md)",
     ]) {
       expect(readme).toContain(link);
     }
@@ -108,6 +109,7 @@ describe("world operations", () => {
         "first ten",
         "PULL_REQUEST_TEMPLATE/new-skill.md",
       ],
+      "SUPPORT.md": ["bug report", "feature request", "Discussions", "SECURITY.md", "CONTRIBUTING.md"],
       "featured/README.md": ["featured/current.md", "featured/archive", "maintainer", "weekly", "STATS.md"],
       "proposals/README.md": ["skills", "traces", "runs", "anti-patterns", "RFC", "manual review"],
       "retired/README.md": ["retired/skills", "lineage", "provenance", "regression", "stale"],

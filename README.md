@@ -28,6 +28,7 @@ curation evidence, and the two-week follow-up tracked by the agent `doctor --liv
 - [retired/](retired/) - archived artifacts with lineage preserved.
 - [.github/workflows/](.github/workflows/) - validation, maintenance, revalidation, and auto-merge workflows.
 - [SECURITY.md](SECURITY.md) - vulnerability, PII, credential, and artifact privacy guidance.
+- [SUPPORT.md](SUPPORT.md) - support routes for bug reports, feature requests, discussions, and governance questions.
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) - contributor conduct expectations.
 - [CONTRIBUTING.md](CONTRIBUTING.md) - contribution paths and review gates.
 - [RELEASING.md](RELEASING.md) - publication and maintenance release checklist.
