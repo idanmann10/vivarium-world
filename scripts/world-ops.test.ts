@@ -503,6 +503,7 @@ describe("world operations", () => {
     const staleSkillsWorkflow = readFileSync(".github/workflows/stale-skills.yml", "utf8");
     const domainArtifactsWorkflow = readFileSync(".github/workflows/validate-domain-artifacts.yml", "utf8");
     const proposalsWorkflow = readFileSync(".github/workflows/validate-proposals.yml", "utf8");
+    const codeqlWorkflow = readFileSync(".github/workflows/codeql.yml", "utf8");
 
     expect(ciWorkflow).toContain("pull_request:");
     expect(ciWorkflow).toContain("push:");
@@ -578,6 +579,13 @@ describe("world operations", () => {
     expect(proposalsWorkflow).toContain("pull_request:");
     expect(proposalsWorkflow).toContain("proposals/**");
     expect(proposalsWorkflow).toContain("bun run scripts/validate-proposals.ts");
+
+    expect(codeqlWorkflow).toContain("name: CodeQL");
+    expect(codeqlWorkflow).toContain("security-events: write");
+    expect(codeqlWorkflow).toContain("github/codeql-action/init@v4");
+    expect(codeqlWorkflow).toContain("languages: javascript-typescript");
+    expect(codeqlWorkflow).toContain("build-mode: none");
+    expect(codeqlWorkflow).toContain("github/codeql-action/analyze@v4");
   });
 
   test("Dependabot keeps Bun dependencies and GitHub Actions current", () => {
