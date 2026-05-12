@@ -3,6 +3,9 @@ name: Revalidate
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   revalidate:
     runs-on: ubuntu-latest

@@ -590,6 +590,25 @@ describe("world operations", () => {
     expect(codeqlWorkflow).toContain("github/codeql-action/analyze@v4");
   });
 
+  test("read-only workflows declare minimal token permissions", () => {
+    for (const path of [
+      ".github/workflows/ci.yml",
+      ".github/workflows/revalidate.yml",
+      ".github/workflows/validate-anti-pattern.yml",
+      ".github/workflows/validate-domain-artifacts.yml",
+      ".github/workflows/validate-proposals.yml",
+      ".github/workflows/validate-run.yml",
+      ".github/workflows/validate-skill.yml",
+      ".github/workflows/validate-trace.yml",
+    ]) {
+      const body = readFileSync(path, "utf8");
+      expect(body).toContain("permissions:");
+      expect(body).toContain("contents: read");
+      expect(body).not.toContain("contents: write");
+      expect(body).not.toContain("pull-requests: write");
+    }
+  });
+
   test("Dependabot keeps Bun dependencies and GitHub Actions current", () => {
     const dependabot = readFileSync(".github/dependabot.yml", "utf8");
 

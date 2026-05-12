@@ -5,6 +5,9 @@ on:
     paths:
       - "domains/**/anti-patterns/**"
 
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
