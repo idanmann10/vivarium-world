@@ -1,0 +1,41 @@
+name: Feature request
+description: Propose a scoped change to the public world, validators, or governance flow
+title: "[feature]: "
+labels:
+  - enhancement
+body:
+  - type: dropdown
+    id: world-area
+    attributes:
+      label: World area
+      options:
+        - artifact format
+        - validator
+        - contribution proposal
+        - auto-merge gate
+        - curation or featured picks
+        - stats or contributor profile
+        - docs
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-change
+    attributes:
+      label: Proposed change
+      description: What should the public world support that it does not support today?
+    validations:
+      required: true
+  - type: textarea
+    id: validation-impact
+    attributes:
+      label: Validation impact
+      description: Which scripts, workflows, or trust gates need to change?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Example evidence
+      description: Link an artifact, PR, Discussion, run, or validator output if available.
+    validations:
+      required: false

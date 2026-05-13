@@ -88,13 +88,14 @@ describe("world operations", () => {
       "[proposals/](proposals/)",
       "[retired/](retired/)",
       "[.github/workflows/](.github/workflows/)",
+      "[SUPPORT.md](SUPPORT.md)",
     ]) {
       expect(readme).toContain(link);
     }
 
     expect(readme).toContain("- coding.inspect-before-edit");
-    expect(readme).toContain("- Skills: 40");
-    expect(readme).toContain("- Top 5 skill share: 100.0%");
+    expect(readme).toContain("- Skills: 41");
+    expect(readme).toContain("- Top 5 skill share: 97.6%");
   });
 
   test("documents world governance and directory contracts", () => {
@@ -108,10 +109,23 @@ describe("world operations", () => {
         "first ten",
         "PULL_REQUEST_TEMPLATE/new-skill.md",
       ],
+      "SUPPORT.md": ["bug report", "feature request", "Discussions", "SECURITY.md", "CONTRIBUTING.md"],
       "featured/README.md": ["featured/current.md", "featured/archive", "maintainer", "weekly", "STATS.md"],
       "proposals/README.md": ["skills", "traces", "runs", "anti-patterns", "RFC", "manual review"],
       "retired/README.md": ["retired/skills", "lineage", "provenance", "regression", "stale"],
       "AGENTS.md": ["bun run lint", "bun run typecheck", "bun run test", "bun run build"],
+      ".github/PULL_REQUEST_TEMPLATE.md": [
+        "Vivarium World Pull Request",
+        "Artifact-specific templates",
+        "new-skill.md",
+        "new-trace.md",
+        "new-run.md",
+        "new-anti-pattern.md",
+        "bun run lint",
+        "bun run typecheck",
+        "bun run test",
+        "bun run build",
+      ],
       ".github/PULL_REQUEST_TEMPLATE/new-skill.md": [
         "bun run scripts/validate-skill.ts",
         "bun run lint",
@@ -491,10 +505,12 @@ describe("world operations", () => {
     const staleSkillsWorkflow = readFileSync(".github/workflows/stale-skills.yml", "utf8");
     const domainArtifactsWorkflow = readFileSync(".github/workflows/validate-domain-artifacts.yml", "utf8");
     const proposalsWorkflow = readFileSync(".github/workflows/validate-proposals.yml", "utf8");
+    const codeqlWorkflow = readFileSync(".github/workflows/codeql.yml", "utf8");
 
     expect(ciWorkflow).toContain("pull_request:");
     expect(ciWorkflow).toContain("push:");
     expect(ciWorkflow).toContain("bun run lint");
+    expect(ciWorkflow).toContain("bun run public-release:scan");
     expect(ciWorkflow).toContain("bun run typecheck");
     expect(ciWorkflow).toContain("bun run test");
     expect(ciWorkflow).toContain("bun run build");
@@ -515,6 +531,9 @@ describe("world operations", () => {
     expect(autoMergeWorkflow).toContain("bun run scripts/check-telemetry.ts");
     expect(autoMergeWorkflow).toContain("bun run scripts/check-veto-window.ts");
     expect(autoMergeWorkflow).toContain("gh pr merge");
+    expect(autoMergeWorkflow).toContain("ready_for_review");
+    expect(autoMergeWorkflow).toContain("github.event_name == 'workflow_dispatch'");
+    expect(autoMergeWorkflow).toContain("github.event.pull_request.draft == false");
 
     expect(featuredArchiveWorkflow).not.toContain("placeholder");
     expect(featuredArchiveWorkflow).toContain("bun run scripts/archive-featured.ts");
@@ -530,6 +549,7 @@ describe("world operations", () => {
     expect(nightlyStatsWorkflow).toContain("gh pr create");
 
     expect(revalidateWorkflow).not.toContain("placeholder");
+    expect(revalidateWorkflow).toContain("bun run public-release:scan");
     expect(revalidateWorkflow).toContain("bun run typecheck");
     expect(revalidateWorkflow).toContain("bun run build");
     expect(revalidateWorkflow).toContain("bun run scripts/validate-skill.ts");
@@ -563,5 +583,83 @@ describe("world operations", () => {
     expect(proposalsWorkflow).toContain("pull_request:");
     expect(proposalsWorkflow).toContain("proposals/**");
     expect(proposalsWorkflow).toContain("bun run scripts/validate-proposals.ts");
+
+    expect(codeqlWorkflow).toContain("name: CodeQL");
+    expect(codeqlWorkflow).toContain("security-events: write");
+    expect(codeqlWorkflow).toContain("github/codeql-action/init@v4");
+    expect(codeqlWorkflow).toContain("languages: javascript-typescript");
+    expect(codeqlWorkflow).toContain("build-mode: none");
+    expect(codeqlWorkflow).toContain("github/codeql-action/analyze@v4");
+  });
+
+  test("read-only workflows declare minimal token permissions", () => {
+    for (const path of [
+      ".github/workflows/ci.yml",
+      ".github/workflows/revalidate.yml",
+      ".github/workflows/validate-anti-pattern.yml",
+      ".github/workflows/validate-domain-artifacts.yml",
+      ".github/workflows/validate-proposals.yml",
+      ".github/workflows/validate-run.yml",
+      ".github/workflows/validate-skill.yml",
+      ".github/workflows/validate-trace.yml",
+    ]) {
+      const body = readFileSync(path, "utf8");
+      expect(body).toContain("permissions:");
+      expect(body).toContain("contents: read");
+      expect(body).not.toContain("contents: write");
+      expect(body).not.toContain("pull-requests: write");
+    }
+  });
+
+  test("Dependabot keeps Bun dependencies and GitHub Actions current", () => {
+    const dependabot = readFileSync(".github/dependabot.yml", "utf8");
+
+    expect(dependabot).toContain("version: 2");
+    expect(dependabot).toContain('package-ecosystem: "bun"');
+    expect(dependabot).toContain('package-ecosystem: "github-actions"');
+    expect(dependabot).toContain('directory: "/"');
+    expect(dependabot).toContain("interval: weekly");
+    expect(dependabot).toContain("open-pull-requests-limit: 5");
+  });
+
+  test("CODEOWNERS routes world artifacts and governance surfaces to the maintainer", () => {
+    const codeowners = readFileSync(".github/CODEOWNERS", "utf8");
+
+    for (const rule of [
+      "* @idanmann10",
+      "domains/ @idanmann10",
+      "proposals/ @idanmann10",
+      "featured/ @idanmann10",
+      "retired/ @idanmann10",
+      "contributors/ @idanmann10",
+      "scripts/ @idanmann10",
+      ".github/ @idanmann10",
+      "SECURITY.md @idanmann10",
+      "RELEASING.md @idanmann10",
+    ]) {
+      expect(codeowners).toContain(rule);
+    }
+  });
+
+  test("issue templates route bugs, feature requests, and support links", () => {
+    const bug = readFileSync(".github/ISSUE_TEMPLATE/bug_report.yml", "utf8");
+    const feature = readFileSync(".github/ISSUE_TEMPLATE/feature_request.yml", "utf8");
+    const config = readFileSync(".github/ISSUE_TEMPLATE/config.yml", "utf8");
+
+    expect(bug).toContain("name: Bug report");
+    expect(bug).toContain("Affected world area");
+    expect(bug).toContain("Evidence or reproduction");
+    expect(bug).toContain("PII or credential risk");
+    expect(bug).toContain("labels:");
+
+    expect(feature).toContain("name: Feature request");
+    expect(feature).toContain("World area");
+    expect(feature).toContain("Proposed change");
+    expect(feature).toContain("Validation impact");
+    expect(feature).toContain("labels:");
+
+    expect(config).toContain("blank_issues_enabled: false");
+    expect(config).toContain("Security reports");
+    expect(config).toContain("RFC discussions");
   });
 });

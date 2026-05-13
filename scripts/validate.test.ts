@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -9,6 +9,93 @@ import { validateProposalFiles } from "./validate-proposals.js";
 import { validateRunFiles } from "./validate-run.js";
 import { validateTraceFiles } from "./validate-trace.js";
 import { assertCodingStarterPack, assertMinimums, countDomainStarterPack, countWorld } from "./world-utils.js";
+
+const worldRootDocs = {
+  "README.md": [
+    "Vivarium World",
+    "[![CI](https://github.com/idanmann10/vivarium-world/actions/workflows/ci.yml/badge.svg)](https://github.com/idanmann10/vivarium-world/actions/workflows/ci.yml)",
+    "[![Validate Proposals](https://github.com/idanmann10/vivarium-world/actions/workflows/validate-proposals.yml/badge.svg)](https://github.com/idanmann10/vivarium-world/actions/workflows/validate-proposals.yml)",
+    "[![License: MIT + CC0](https://img.shields.io/badge/License-MIT%20%2B%20CC0-blue.svg)](LICENSE)",
+    "![Commons: World](https://img.shields.io/badge/commons-world-2f855a)",
+    "open commons",
+    "Subscribe agents to the commons",
+    "What lives in the world",
+    "Contribution loop",
+    "Publication boundary",
+    "flowchart LR",
+    "STATS.md",
+    "featured",
+    "auto-merge",
+    "SECURITY.md",
+    "CODE_OF_CONDUCT.md",
+    "RELEASING.md",
+    "LICENSE",
+    "MIT",
+  ],
+  "CONTRIBUTING.md": [
+    "Vivarium World",
+    "validate",
+    "PII",
+    "auto-merge",
+    "private world",
+    "STATS.md",
+  ],
+  "SECURITY.md": [
+    "Vivarium World",
+    "security",
+    "PII",
+    "credential",
+    "regression",
+    "private world",
+  ],
+  "CODE_OF_CONDUCT.md": [
+    "Vivarium World",
+    "Code of Conduct",
+    "harassment",
+    "Enforcement",
+  ],
+  "RELEASING.md": [
+    "Vivarium World",
+    "release",
+    "public-release:scan",
+    "validate",
+    "STATS.md",
+    "featured",
+    "auto-merge",
+    "LICENSE",
+    "CC0",
+    "public repository",
+    "launch:security-audit",
+    "CodeQL",
+    "secret scanning",
+    "push protection",
+    "private vulnerability reporting",
+    "branch protection",
+    "repository rulesets",
+    "recommended baseline",
+    "Require pull request reviews",
+    "Require status checks to pass",
+    "Block force pushes",
+    "Block deletions",
+  ],
+  LICENSE: ["MIT License", "Vivarium contributors", "CC0"],
+} as const;
+
+interface WorldPackageJson {
+  readonly name?: string;
+  readonly private?: boolean;
+  readonly description?: string;
+  readonly license?: string;
+  readonly repository?: {
+    readonly type?: string;
+    readonly url?: string;
+  };
+  readonly bugs?: {
+    readonly url?: string;
+  };
+  readonly homepage?: string;
+  readonly scripts?: Record<string, string>;
+}
 
 describe("world seed content", () => {
   test("covers every Phase 0 primitive type", () => {
@@ -109,5 +196,30 @@ describe("world seed content", () => {
       "proposals/skills/coding/bad-skill/SKILL.md: invalid structure",
       "proposals/traces/coding/trace-leaky/TRACE.md: possible PII",
     ]);
+  });
+
+  test("documents open-source production readiness", () => {
+    for (const [path, terms] of Object.entries(worldRootDocs)) {
+      expect(existsSync(path), `${path} should exist`).toBe(true);
+      const body = existsSync(path) ? readFileSync(path, "utf8") : "";
+      for (const term of terms) {
+        expect(body).toContain(term);
+      }
+    }
+  });
+
+  test("uses public-facing package metadata", () => {
+    const packageJson = JSON.parse(readFileSync("package.json", "utf8")) as WorldPackageJson;
+
+    expect(packageJson.name).toBe("vivarium-world");
+    expect(packageJson.private).toBe(true);
+    expect(packageJson.description).toContain("Git-hosted");
+    expect(packageJson.license).toBe("MIT");
+    expect(packageJson.repository?.type).toBe("git");
+    expect(packageJson.repository?.url).toContain("vivarium-world");
+    expect(packageJson.bugs?.url).toContain("vivarium-world/issues");
+    expect(packageJson.homepage).toContain("vivarium-world");
+    expect(packageJson.scripts?.["public-release:scan"]).toBe("bun run scripts/public-release-scan.ts");
+    expect(packageJson.scripts?.["launch:security-audit"]).toBe("bun run scripts/launch-security-audit.ts");
   });
 });
