@@ -78,12 +78,12 @@ bun run build
 ## Current Stats
 
 - Domains: 3
-- Skills: 41
+- Skills: 42
 - Anti-patterns: 7
 - Traces: 8
 - Runs: 6
 - Contributor profiles: 1
-- Top 5 skill share: 97.6%
+- Top 5 skill share: 95.2%
 
 ## Production Status
 
